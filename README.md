@@ -1,0 +1,3 @@
+# AdhocRoute
+在android手机上使用olsr协议进行adhoc组网
+在android手机上使用olsr协议进行adhoc组网
