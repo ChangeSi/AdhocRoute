@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">AdhocRoute</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">参数设置</string>
+
+<!--     <string-array name="channel_values"> -->
+<!--         <item>1</item> -->
+<!--         <item>2</item> -->
+<!--         <item>3</item> -->
+<!--         <item>4</item> -->
+<!--         <item>5</item> -->
+<!--         <item>6</item> -->
+<!--         <item>7</item> -->
+<!--         <item>8</item> -->
+<!--         <item>9</item> -->
+<!--         <item>10</item> -->
+<!--         <item>11</item> -->
+<!--         <item>12</item> -->
+<!--         <item>13</item>haihaoba  -->
+        
+<!--     </string-array> -->
+<!--     <string-array name="channel_names"> -->
+<!--         <item>1 – 2412 MHz</item> -->
+<!--         <item>2 – 2417 MHz</item> -->
+<!--         <item>3 – 2422 MHz</item> -->
+<!--         <item>4 – 2427 MHz</item> -->
+<!--         <item>5 – 2432 MHz</item> -->
+<!--         <item>6 – 2437 MHz</item> -->
+<!--         <item>7 – 2442 MHz</item> -->
+<!--         <item>8 – 2447 MHz</item> -->
+<!--         <item>9 – 2452 MHz</item> -->
+<!--         <item>10 – 2457 MHz</item> -->
+<!--         <item>11 – 2462 MHz</item> -->
+<!--         <item>12 – 2467 MHz</item> -->
+<!--         <item>13 – 2472 MHz</item> -->
+<!--     </string-array> -->
+    
+</resources>

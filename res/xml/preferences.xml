@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:title="设置" >
+
+    <PreferenceCategory android:title="网络设置" >
+        <EditTextPreference
+            android:key="ssid"
+            android:singleLine="true"
+            android:title="SSID (Network Name)"
+            android:defaultValue="Android-Ad-Hoc"
+             />
+        <ListPreference
+            android:key="lan_channel"
+            android:title="channel" />
+        
+        <EditTextPreference
+            android:key="adhoc_ip"
+            android:singleLine="true"
+            android:title="Node IP" />
+		<EditTextPreference
+            android:key="adhoc_mask"
+            android:singleLine="true"
+            android:title="Adhoc Mask"
+            android:defaultValue="255.255.255.0" />
+		<EditTextPreference
+            android:key="adhoc_dns"
+            android:singleLine="true"
+            android:title="Adhoc DNS"
+            android:defaultValue="8.8.8.8" />
+		
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="路由设置" >
+        <EditTextPreference
+            android:key="wan"
+            android:singleLine="true"
+            android:hint="网络和掩码用空格隔开"
+            android:title="外网" />
+        <EditTextPreference
+            android:key="interface"
+            android:singleLine="true"
+            android:title="网卡"
+            android:defaultValue="wlan0" />
+        <CheckBoxPreference
+            android:key="open_gateway"
+            android:singleLine="true"
+            android:title="开启网关功能" />
+    </PreferenceCategory>
+
+</PreferenceScreen>
