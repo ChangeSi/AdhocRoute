@@ -49,45 +49,20 @@ public class NativeHelper {
 		try {
 			AssetManager am = context.getAssets();
 			final String[] assetList = am.list("");
-			Map<String,File> unzipTo = new HashMap<String,File>();
-			Map<String,Boolean> overwriteOnUnzip = new HashMap<String,Boolean>();
+			
 			for (String asset : assetList) {
 				if (asset.equals("images") || asset.equals("sounds") || asset.equals("webkit") || asset.equals("databases") || asset.equals("kioskmode"))
 					continue;
 				int BUFFER = 2048;
-				final File file;
-				String extension = asset.substring((asset.lastIndexOf('.') != -1) ? asset.lastIndexOf('.') : 0);
-				File directory = unzipTo.get(extension);
-				boolean overwrite = (overwriteOnUnzip.get(extension) == null) ? true : overwriteOnUnzip.get(extension);; 
-				Log.d("NativeHelper", "extension: " + extension);
-				Log.d("NativeHelper", "directory: " +
-						((directory != null) ? directory.getAbsolutePath() : "N/A") +
-						((overwrite) ? "(overwrite)" : "(keep)"));
-				if (directory != null) {
-					file = new File(directory, asset);
-					if (file.exists() && !overwrite) {
-						continue;
-					}
-				} else {
-					file = new File(NativeHelper.app_bin, asset);
-				}
-				InputStream tmp;
-				try {
-					tmp = am.open(asset);
-				} catch (FileNotFoundException e) {
-					// if asset is a directory, we'll get this exception
-					e.printStackTrace();
-					continue;
-				}
-				final InputStream assetIS = tmp;
+				final File file = new File(NativeHelper.app_bin, asset);
+				final InputStream assetIS = am.open(asset);
 				if (file.exists()) {
 					file.delete();
-					Log.i(AdhocRouteApp.TAG, "DebiHelper.unzipDebiFiles() deleting "
-							+ file.getAbsolutePath());
+					// TODO:没必要都删除了，只需要每次更新配置文件即可,后面修改
+					Log.i(AdhocRouteApp.TAG, "NativeHelper.unzipDebiFiles() deleting "+ file.getAbsolutePath());
 				}
 				FileOutputStream fos = new FileOutputStream(file);
 				BufferedOutputStream dest = new BufferedOutputStream(fos, BUFFER);
-
 				int count;
 				byte[] data = new byte[BUFFER];
 				while ((count = assetIS.read(data, 0, BUFFER)) != -1) {
@@ -101,7 +76,7 @@ public class NativeHelper {
 			result = false;
 			Log.e(AdhocRouteApp.TAG, "Can't unzip", e);
 		}
-		chmod("0750", new File(OLSRD));
+		chmod("0777", new File(OLSRD));
 		return result;
 	}
 

@@ -1,19 +1,23 @@
 package com.xd.adhocroute.utils;
 
+import java.io.File;
 import java.io.IOException;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
+import android.util.Log;
 
 import com.xd.adhocroute.AdhocRouteApp;
 
 public class PrometheusServices extends Service {
-	private static final String OLSR_START = "su /data/local/bin/olsrd -f /data/local/etc/olsrd.conf  -d 1";
+	
+	private String OLSR_START = "";
 	private static final String PS = "su ps";
 	private static final String OLSR_KILL = "su kill -9 ";
-	public static final String CMD_OLSR = "/data/local/bin/olsrd";
+	public static final String CMD_OLSR = "olsrd";
 	public static final String DNS = "su setprop net.dns1 8.8.8.8";
 	private AdhocRouteApp app = null;
 	// app states
@@ -52,18 +56,23 @@ public class PrometheusServices extends Service {
 			}
 		};
 	};
+	private String olsrdPath;
+	private String olsrdConfPath;
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
 		app = (AdhocRouteApp)getApplication();
-		
+		olsrdPath = new File(getDir("bin", Context.MODE_PRIVATE), "olsrd").getAbsolutePath();
+		olsrdConfPath = new File(getFilesDir(), "olsrd.conf").getAbsolutePath();
+		OLSR_START = "su " + olsrdPath + " -f " + olsrdConfPath + " -d 1" + " -i " + "wlan0";
 	}
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		app.serviceStarted(this);
 		return super.onStartCommand(intent, flags, startId);
 	}
+	//         /data/data/com.xd.adhocroute/app_bin/olsrd -f /data/data/com.xd.adhocroute/files/olsrd.conf -d 0 -i wlan0
 
 	@Override
 	public void onDestroy() {
@@ -71,18 +80,25 @@ public class PrometheusServices extends Service {
 		app.serviceDestroy();
 	}
 	private boolean startProcess(String cmd) {
-		try {
-			Process process = Runtime.getRuntime().exec(OLSR_START);
-			threads[0] = new Thread(new OutputMonitor(MSG_OUTPUT, process.getInputStream()));
-            threads[1] = new Thread(new OutputMonitor(MSG_ERROR, process.getErrorStream()));
-            threads[0].start();
-            threads[1].start();
-			return true;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
-		}
+		RouteUtils.execCmd(cmd);
+//		try {
+//			Process process = Runtime.getRuntime().exec(OLSR_START);
+////			RouteUtils.execCmd(OLSR_START);
+//			Log.i(AdhocRouteApp.TAG, OLSR_START);
+//			threads[0] = new Thread(new OutputMonitor(MSG_OUTPUT, process.getInputStream()));
+//            threads[1] = new Thread(new OutputMonitor(MSG_ERROR, process.getErrorStream()));
+//            threads[0].start();
+//            threads[1].start();
+//			return true;
+//		} catch (IOException e) {
+//			Log.i(AdhocRouteApp.TAG, "=============================");
+//			Log.i(AdhocRouteApp.TAG, "start olsrd failed in shell : "+ e.toString());
+//			return false;
+//		}
+		return false;
 	}
+//   su /data/data/com.xd.adhocroute/app_bin/olsrd -f /data/data/com.xd.adhocroute/files/olsrd.conf -d 0
+
 
 	private void stopProcess() {
 		try {
@@ -95,14 +111,15 @@ public class PrometheusServices extends Service {
 	}
 
 	public void startOLSR() {
+		Log.i(AdhocRouteApp.TAG, "startOLSRD");
 		startProcess(OLSR_START);
 	}
 	
 	public void stopOLSR() {
+		Log.i(AdhocRouteApp.TAG, "stopOLSRD");
 		stopProcess();
 	}
 
-	
 	private class OutputMonitor implements Runnable {
         private final java.io.BufferedReader br;
         private final int msg;
@@ -112,19 +129,20 @@ public class PrometheusServices extends Service {
         }
         public void run() {
             try{
-                String line;
-                do {
-                    line = br.readLine();
-                    if (line.contains(CMD_OLSR)) {
+                String line = br.readLine();
+                while(line != null) {
+                    if (line.contains(olsrdPath)) {
 						String pidStr = line.split("\\s+")[1];
 						int pid = Integer.valueOf(pidStr);
 						handler.obtainMessage(MSG_PID, pid).sendToTarget();
 					}
+                    line = br.readLine();
                  // 处理进程Process的消息
                  // handler.obtainMessage(msg, line).sendToTarget(); // NOTE: the last null is also sent!
-                } while(line != null);
+                } 
             } catch (Exception e) {
                 // 处理进程Process的消息
+            	Log.i(AdhocRouteApp.TAG, "shell start olsr failed: " + e.toString());
             }
         }
     }

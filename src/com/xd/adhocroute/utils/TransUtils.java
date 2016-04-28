@@ -21,7 +21,6 @@ public class TransUtils {
 					| (((int) data[index + 1] & 0xff) << 8)
 					| (((int) data[index + 2] & 0xff) << 16) | (((int) data[index + 3] & 0xff) << 24));
 		} catch (ArrayIndexOutOfBoundsException e) {
-			// TODO: handle exception
 			e.printStackTrace();
 			i = 0;
 		}
