@@ -31,10 +31,9 @@ import android.widget.Toast;
 import com.xd.adhocroute.data.RouteItem;
 import com.xd.adhocroute.utils.AdhocRun;
 import com.xd.adhocroute.utils.IPUtils;
+import com.xd.adhocroute.utils.NativeHelper;
 import com.xd.adhocroute.utils.RouteRefresh;
-import com.xd.adhocroute.utils.ShellUtils;
 import com.xd.adhocroute.utils.RouteRefresh.Callback;
-import com.xd.adhocroute.utils.RouteUtils;
 
 public class MainActivity extends Activity implements OnClickListener {
 	private Thread[] threads = new Thread[2];
@@ -147,92 +146,45 @@ public class MainActivity extends Activity implements OnClickListener {
 	}
 
 	private boolean startProcess() {
-		
+
 		// Process process = Runtime.getRuntime().exec(new
 		// String[]{"/system/xbin/su","-c",
 		// "/data/data/com.xd.adhocroute/app_bin/olsrd -f /data/data/com.xd.adhocroute/files/olsrd.conf -d 0 -i wlan0"});
 		// Process process =
 		// Runtime.getRuntime().exec("/system/xbin/su /data/data/com.xd.adhocroute/app_bin/olsrd -f /data/data/com.xd.adhocroute/files/olsrd.conf -d 0 -i wlan0");
-		//RouteUtils.execCmd("/data/data/com.xd.adhocroute/app_bin/olsrd -f /data/data/com.xd.adhocroute/files/olsrd.conf -d 0 -i wlan0");
+		// RouteUtils.execCmd("/data/data/com.xd.adhocroute/app_bin/olsrd -f /data/data/com.xd.adhocroute/files/olsrd.conf -d 0 -i wlan0");
 
-//		try {
-//			RouteUtils.exec("/data/data/com.xd.adhocroute/app_bin/olsrd -f /data/data/com.xd.adhocroute/files/olsrd.conf -d 1 -i wlan0");
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		} catch (InterruptedException e) {
-//			e.printStackTrace();
-//		}
-		
-		
-//		ShellUtils.execCommand(new String[]{"su 1"}, true);
-//		ShellUtils.execCommand(new String[]{"", "/data/data/com.xd.adhocroute/app_bin/olsrd -f /data/data/com.xd.adhocroute/files/olsrd.conf -d 0 -i wlan0"}, true);
-		
+		// try {
+		// RouteUtils.exec("/data/data/com.xd.adhocroute/app_bin/olsrd -f /data/data/com.xd.adhocroute/files/olsrd.conf -d 1 -i wlan0");
+		// } catch (IOException e) {
+		// e.printStackTrace();
+		// } catch (InterruptedException e) {
+		// e.printStackTrace();
+		// }
+
+		// ShellUtils.execCommand(new String[]{"su 1"}, true);
+		// ShellUtils.execCommand(new String[]{"",
+		// "/data/data/com.xd.adhocroute/app_bin/olsrd -f /data/data/com.xd.adhocroute/files/olsrd.conf -d 0 -i wlan0"},
+		// true);
+
 		// TODO:
 		// 存在问题，Android手机上可以执行
 		// 红米2A上有问题：执行不了root权限的命令
 		try {
-			Process process = Runtime.getRuntime().exec("su mkdir /data/data/test");
-			 threads[0] = new Thread(new OutputMonitor(MSG_OUTPUT,
-			 process.getInputStream()));
-			 threads[1] = new Thread(new OutputMonitor(MSG_ERROR,
-			 process.getErrorStream()));
-			 threads[0].start();
-			 threads[1].start();
+			Process process = Runtime.getRuntime().exec(
+					"su mkdir /data/data/test");
+			threads[0] = new Thread(new OutputMonitor(MSG_OUTPUT,
+					process.getInputStream()));
+			threads[1] = new Thread(new OutputMonitor(MSG_ERROR,
+					process.getErrorStream()));
+			threads[0].start();
+			threads[1].start();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		return true;
 	}
 
-	private String exec(String arg0, String arg1, String arg2) {
-		try {
-			// android.os.Exec is not included in android.jar so we need to use
-			// reflection.
-			Class execClass = Class.forName("android.os.Exec");
-			Method createSubprocess = execClass.getMethod("createSubprocess",
-					String.class, String.class, String.class, int[].class);
-			Method waitFor = execClass.getMethod("waitFor", int.class);
-
-			// Executes the command.
-			// NOTE: createSubprocess() is asynchronous.
-			int[] pid = new int[1];
-			FileDescriptor fd = (FileDescriptor) createSubprocess.invoke(null,
-					arg0, arg1, arg2, pid);
-
-			// Reads stdout.
-			// NOTE: You can write to stdin of the command using new
-			// FileOutputStream(fd).
-			FileInputStream in = new FileInputStream(fd);
-			BufferedReader reader = new BufferedReader(
-					new InputStreamReader(in));
-			String output = "";
-			try {
-				String line;
-				while ((line = reader.readLine()) != null) {
-					output += line + "\n";
-				}
-			} catch (IOException e) {
-				// It seems IOException is thrown when it reaches EOF.
-			}
-
-			// Waits for the command to finish.
-			waitFor.invoke(null, pid[0]);
-
-			return output;
-		} catch (ClassNotFoundException e) {
-			throw new RuntimeException(e.getMessage());
-		} catch (SecurityException e) {
-			throw new RuntimeException(e.getMessage());
-		} catch (NoSuchMethodException e) {
-			throw new RuntimeException(e.getMessage());
-		} catch (IllegalArgumentException e) {
-			throw new RuntimeException(e.getMessage());
-		} catch (IllegalAccessException e) {
-			throw new RuntimeException(e.getMessage());
-		} catch (InvocationTargetException e) {
-			throw new RuntimeException(e.getMessage());
-		}
-	}
 
 	private class OutputMonitor implements Runnable {
 		private final java.io.BufferedReader br;
@@ -272,30 +224,41 @@ public class MainActivity extends Activity implements OnClickListener {
 		if (v.getId() == R.id.ib_olsrd) {
 			// 测试命令
 
-			startProcess();
+			if (!routeRunning) { 
+				// 开启路由 
+				
+				// 1.根据程序运行状态改变按钮状态
 
-			/*
-			 * if (!routeRunning) { // 开启路由 // 1.根据程序运行状态改变按钮状态
-			 * 
-			 * // 2.创建Ad-Hoc网络 adhocRun.constructAdhoc(); // 3.修改节点IP显示
-			 * handler.postDelayed(new Runnable() {
-			 * 
-			 * @Override public void run() { String localIP =
-			 * IPUtils.getAdhocIpString();
-			 * tv_deviceip.setText(Html.fromHtml(generateDeviceName(localIP)));
-			 * } }, 1000);
-			 * 
-			 * // 在app_bin里面创建文件 NativeHelper.setup(this); //
-			 * 将asset里面的文件解压到app_bin目录下 NativeHelper.unzipAssets(this); //
-			 * 更新配置文件，asset里面的配置文件和设置的参数共同决定，更新到package/files/olsrd.conf
-			 * NativeHelper.updateConfig(this); routeRunning = true; // 使用命令执行
-			 * app.startService();
-			 * 
-			 * // 修改按钮状态
-			 * olsrd_switch.setImageResource(R.drawable.power_on_icon); } else {
-			 * // 关闭路由 app.stopService(); routeRunning = false;
-			 * olsrd_switch.setImageResource(R.drawable.power_off_icon); }
-			 */
+				// 2.创建Ad-Hoc网络 
+				adhocRun.constructAdhoc(); 
+				// 3.修改节点IP显示
+				handler.postDelayed(new Runnable() {
+					@Override
+					public void run() {
+						String localIP = IPUtils.getAdhocIpString();
+						tv_deviceip.setText(Html
+								.fromHtml(generateDeviceName(localIP)));
+					}
+				}, 1000);
+
+				// 在app_bin里面创建文件 
+				NativeHelper.setup(this);
+				// 将asset里面的文件解压到app_bin目录下
+				NativeHelper.unzipAssets(this);
+				// 更新配置文件，asset里面的配置文件和设置的参数共同决定，更新到package/files/olsrd.conf
+				NativeHelper.updateConfig(this);
+				routeRunning = true; 
+				// 使用命令执行
+				app.startService();
+				// 修改按钮状态
+				olsrd_switch.setImageResource(R.drawable.power_on_icon);
+			} else {
+				// 关闭路由 
+				app.stopService(); 
+				routeRunning = false;
+				olsrd_switch.setImageResource(R.drawable.power_off_icon);
+			}
+
 		}
 
 	}

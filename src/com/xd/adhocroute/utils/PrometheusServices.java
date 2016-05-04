@@ -1,7 +1,9 @@
 package com.xd.adhocroute.utils;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import android.app.Service;
 import android.content.Context;
@@ -14,10 +16,13 @@ import com.xd.adhocroute.AdhocRouteApp;
 
 public class PrometheusServices extends Service {
 	
+	private String olsrdPath;
+	private String olsrdConfPath;
+	
 	private String OLSR_START = "";
-	private static final String PS = "su ps";
-	private static final String OLSR_KILL = "su kill -9 ";
-	public static final String CMD_OLSR = "olsrd";
+	private static final String PS = "ps";
+	private static final String OLSR_KILL = "kill -9 ";
+	public static final String CMD_OLSR = "app_bin/olsrd";
 	public static final String DNS = "su setprop net.dns1 8.8.8.8";
 	private AdhocRouteApp app = null;
 	// app states
@@ -44,7 +49,10 @@ public class PrometheusServices extends Service {
 				int pid = (Integer)msg.obj;
 				// 
 				try {
-					Process process = Runtime.getRuntime().exec(OLSR_KILL + pid);
+					Process process = Runtime.getRuntime().exec("su");
+					OutputStream os = process.getOutputStream();
+					os.write(("kill -9 " + pid).getBytes());
+					os.close();
 					process.waitFor();
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -56,16 +64,14 @@ public class PrometheusServices extends Service {
 			}
 		};
 	};
-	private String olsrdPath;
-	private String olsrdConfPath;
-
+	
 	@Override
 	public void onCreate() {
 		super.onCreate();
 		app = (AdhocRouteApp)getApplication();
 		olsrdPath = new File(getDir("bin", Context.MODE_PRIVATE), "olsrd").getAbsolutePath();
 		olsrdConfPath = new File(getFilesDir(), "olsrd.conf").getAbsolutePath();
-		OLSR_START = "su " + olsrdPath + " -f " + olsrdConfPath + " -d 1" + " -i " + "wlan0";
+		OLSR_START = olsrdPath + " -f " + olsrdConfPath + " -d 0" + " -i " + "wlan0";
 	}
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
@@ -80,32 +86,52 @@ public class PrometheusServices extends Service {
 		app.serviceDestroy();
 	}
 	private boolean startProcess(String cmd) {
-		RouteUtils.execCmd(cmd);
-//		try {
-//			Process process = Runtime.getRuntime().exec(OLSR_START);
-////			RouteUtils.execCmd(OLSR_START);
-//			Log.i(AdhocRouteApp.TAG, OLSR_START);
-//			threads[0] = new Thread(new OutputMonitor(MSG_OUTPUT, process.getInputStream()));
-//            threads[1] = new Thread(new OutputMonitor(MSG_ERROR, process.getErrorStream()));
-//            threads[0].start();
-//            threads[1].start();
-//			return true;
-//		} catch (IOException e) {
-//			Log.i(AdhocRouteApp.TAG, "=============================");
-//			Log.i(AdhocRouteApp.TAG, "start olsrd failed in shell : "+ e.toString());
-//			return false;
-//		}
-		return false;
+		try {
+			Process process = Runtime.getRuntime().exec("su");
+			OutputStream os = process.getOutputStream();
+			os.write(cmd.getBytes());
+			os.flush();
+			os.close();
+			process.waitFor();
+			Log.i(AdhocRouteApp.TAG, OLSR_START);
+			threads[0] = new Thread(new OutputMonitor(MSG_OUTPUT, process.getInputStream()));
+            threads[1] = new Thread(new OutputMonitor(MSG_ERROR, process.getErrorStream()));
+            threads[0].start();
+            threads[1].start();
+			return true;
+		} catch (Exception e) {
+			Log.i(AdhocRouteApp.TAG, "=============================");
+			Log.i(AdhocRouteApp.TAG, "start olsrd failed in shell : "+ e.toString());
+			return false;
+		}
 	}
+	
 //   su /data/data/com.xd.adhocroute/app_bin/olsrd -f /data/data/com.xd.adhocroute/files/olsrd.conf -d 0
 
 
 	private void stopProcess() {
 		try {
-			Process process = Runtime.getRuntime().exec(PS);
-			killThread = new Thread(new OutputMonitor(MSG_OUTPUT, process.getInputStream()));
-			killThread.start();
-		} catch (IOException e) {
+			Process process = Runtime.getRuntime().exec("su");
+			OutputStream os = process.getOutputStream();
+			os.write("ps".getBytes());
+			os.close();
+			BufferedReader br = new BufferedReader(new java.io.InputStreamReader(process.getInputStream()));
+			String line = br.readLine();;
+            while(line != null){
+                line = br.readLine();
+                if (line.contains(CMD_OLSR)) {
+					String pidStr = line.split("\\s+")[1];
+					int pid = Integer.valueOf(pidStr);
+					handler.obtainMessage(MSG_PID, pid).sendToTarget();
+				}
+                System.out.println("---------->"  + line);
+             // 处理进程Process的消息
+             // handler.obtainMessage(msg, line).sendToTarget(); // NOTE: the last null is also sent!
+            }
+			process.waitFor();
+//			killThread = new Thread(new OutputMonitor(MSG_OUTPUT, process.getInputStream()));
+//			killThread.start();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -137,6 +163,8 @@ public class PrometheusServices extends Service {
 						handler.obtainMessage(MSG_PID, pid).sendToTarget();
 					}
                     line = br.readLine();
+                    if (line != null)
+                    Log.e("#################", line);
                  // 处理进程Process的消息
                  // handler.obtainMessage(msg, line).sendToTarget(); // NOTE: the last null is also sent!
                 } 
