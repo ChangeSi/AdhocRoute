@@ -30,7 +30,7 @@
             </intent-filter>
         </activity>
         <activity  android:name="com.xd.adhocroute.SettingsActivity"/>
-        <service android:name="com.xd.adhocroute.utils.PrometheusServices"/>
+        <service android:name="com.xd.adhocroute.utils.RouteServices"/>
     </application>
 	<!--允许应用程序改变网络状态-->    
 

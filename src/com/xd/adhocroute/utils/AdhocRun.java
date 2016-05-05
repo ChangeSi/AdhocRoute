@@ -1,10 +1,12 @@
 package com.xd.adhocroute.utils;
 
 import java.net.InetAddress;
+import java.util.List;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.wifi.WifiConfiguration.KeyMgmt;
+import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -63,8 +65,7 @@ public class AdhocRun {
 //		showScan = false;
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
 		String ssid = sp.getString("ssid", "");
-		String channel = sp.getString("lan_channel", "");
-		// String gw = "192.168.2.1";
+		String channel = sp.getString("lan_channel", "2412");
 		String ip = sp.getString("adhoc_ip", "");
 		String mask = sp.getString("adhoc_mask", "");
 
@@ -74,16 +75,20 @@ public class AdhocRun {
 				wifiConfig.SSID = "\"" + ssid + "\"";
 				wifiConfig.allowedKeyManagement.set(KeyMgmt.NONE);
 				wifiConfig.setIpAssignment("STATIC");
-				wifiConfig.setIpAddress(InetAddress.getByName(ip),
-						24);
+				wifiConfig.setIpAddress(InetAddress.getByName(ip),24);
 				wifiConfig.setDNS(InetAddress.getByName("8.8.8.8"));
 				wifiConfig.isIBSS = true;// new api
 				wifiConfig.frequency = Integer.parseInt(channel);// new
+				
+				WifiConfiguration tempConfig = isExsits(wifiConfig.SSID);
+	    		if (tempConfig != null) {
+	    			wifiManager.removeNetwork(tempConfig.networkId);
+	    		}
+	    		
 				int id = wifiManager.addNetwork(wifiConfig);
 				if (id < 0) {
 					Log.i(AdhocRouteApp.TAG, "Failed to add Ad-hoc network");
-					Toast.makeText(context, "Failed to add Ad-hoc network", 0)
-							.show();
+					Toast.makeText(context, "Failed to add Ad-hoc network" + id, 0).show();
 				} else {
 					wifiManager.enableNetwork(id, true);
 					wifiManager.saveConfiguration();
@@ -95,12 +100,21 @@ public class AdhocRun {
 				return false;
 			}
 			Toast.makeText(context,"Ad-hoc start successfully id " + wifiManager.getConnectionInfo().getNetworkId(), 0).show();
-//			showScan = true;
 			return true;
 		}
 		return false;
 	}
-
+	
+    private WifiConfiguration isExsits(String SSID) {
+		List<WifiConfiguration> existingConfigs = wifiManager.getConfiguredNetworks();
+		for (WifiConfiguration existingConfig : existingConfigs) {
+			if (("\"" + SSID + "\"").equals(existingConfig.SSID)) {
+				return existingConfig;
+			}
+		}
+		return null;
+	}
+    
 	private boolean checkParams(String ssid, String channel, String ip,
 			String mask) {
 		String show = "";
@@ -118,7 +132,6 @@ public class AdhocRun {
 		}
 		return true;
 		// 继续检查参数是否规范
-
 	}
 
 	public int toNumMask(String maskStr) {

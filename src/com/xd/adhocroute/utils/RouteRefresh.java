@@ -155,6 +155,7 @@ public class RouteRefresh {
 				System.out.println("------->" + code);
 				if (code == 200) {
 					String routeContent = EntityUtils.toString(response.getEntity());
+					System.out.println("############" + routeContent);
 					List<RouteItem> routeTables = getRouteItem(routeContent);
 					// json解析
 					// System.out.println("routeContent-------------" +
@@ -228,7 +229,7 @@ public class RouteRefresh {
 			if (routeItem[0].contains("0.0.0.0")) {
 				try {
 					System.out.println("DNSDNSDNSDNSDNSDNSDNSDNSDNSDNSDNSDNS");
-					Runtime.getRuntime().exec(PrometheusServices.DNS);
+					Runtime.getRuntime().exec(RouteServices.DNS);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}

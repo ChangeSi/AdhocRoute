@@ -1,12 +1,6 @@
 package com.xd.adhocroute;
 
-import java.io.BufferedReader;
-import java.io.FileDescriptor;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -17,7 +11,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -62,25 +55,26 @@ public class MainActivity extends Activity implements OnClickListener {
 		handler = new InfoHandler();
 		adhocRun = new AdhocRun(this);
 		adhocRun.startScanThread();
+		routeRefresh = new RouteRefresh();
+		initUI();
+		setSwitchState();
+		adapter = new RouteAdapter(routeTables, this);
+		lvRoute.setAdapter(adapter);
+		timer = new Timer();
+		timer.schedule(new RefreshTimeTask("http://127.0.0.1:9999"), 1000, 3000);
+	}
+
+	private void initUI() {
 		lvRoute = (ListView) findViewById(R.id.lv_route);
 		olsrd_switch = (ImageButton) findViewById(R.id.ib_olsrd);
 		tv_deviceip = (TextView) findViewById(R.id.tv_deviceip);
 		tvTips = (TextView) findViewById(R.id.tv_tips);
 		olsrd_switch.setOnClickListener(this);
-		String localIP = IPUtils.getAdhocIpString();
-		if (localIP != null) {
-			tv_deviceip.setText(Html.fromHtml(generateDeviceName(localIP)));
-		}
-		setSwitchState();
-		routeRefresh = new RouteRefresh();
-		adapter = new RouteAdapter(routeTables, this);
-		lvRoute.setAdapter(adapter);
-		timer = new Timer();
-		timer.schedule(new RefreshTimeTask("http://127.0.0.1:8888/routes"),
-				1000, 3000);
+		tv_deviceip.setText(generateTips(routeRunning));
 	}
 
 	private void setSwitchState() {
+		
 		if (app.service == null) {
 			routeRunning = false;
 			olsrd_switch.setImageResource(R.drawable.power_off_icon);
@@ -91,9 +85,7 @@ public class MainActivity extends Activity implements OnClickListener {
 	}
 
 	private class RefreshTimeTask extends TimerTask {
-
 		private String url;
-
 		public RefreshTimeTask(String url) {
 			this.url = url;
 		}
@@ -145,8 +137,8 @@ public class MainActivity extends Activity implements OnClickListener {
 		return super.onOptionsItemSelected(item);
 	}
 
+	@ Deprecated
 	private boolean startProcess() {
-
 		// Process process = Runtime.getRuntime().exec(new
 		// String[]{"/system/xbin/su","-c",
 		// "/data/data/com.xd.adhocroute/app_bin/olsrd -f /data/data/com.xd.adhocroute/files/olsrd.conf -d 0 -i wlan0"});
@@ -222,45 +214,40 @@ public class MainActivity extends Activity implements OnClickListener {
 	@Override
 	public void onClick(View v) {
 		if (v.getId() == R.id.ib_olsrd) {
-			// 测试命令
-
 			if (!routeRunning) { 
 				// 开启路由 
 				
-				// 1.根据程序运行状态改变按钮状态
-
-				// 2.创建Ad-Hoc网络 
+				// 1.创建Ad-Hoc网络 
 				adhocRun.constructAdhoc(); 
-				// 3.修改节点IP显示
+				// 2.修改节点IP显示
 				handler.postDelayed(new Runnable() {
 					@Override
 					public void run() {
-						String localIP = IPUtils.getAdhocIpString();
-						tv_deviceip.setText(Html
-								.fromHtml(generateDeviceName(localIP)));
+						tv_deviceip.setText(generateTips(routeRunning));
 					}
 				}, 1000);
 
-				// 在app_bin里面创建文件 
+				// 3.将asset里面的文件拷贝到对应位置
+				// 3.1 在app_bin里面创建文件 
 				NativeHelper.setup(this);
-				// 将asset里面的文件解压到app_bin目录下
+				// 3.2 将asset里面的文件解压到app_bin目录下
 				NativeHelper.unzipAssets(this);
-				// 更新配置文件，asset里面的配置文件和设置的参数共同决定，更新到package/files/olsrd.conf
+				// 3.3 更新配置文件，asset里面的配置文件和设置的参数共同决定，更新到package/files/olsrd.conf
 				NativeHelper.updateConfig(this);
+				
 				routeRunning = true; 
-				// 使用命令执行
+				// 3.使用命令执行路由
 				app.startService();
-				// 修改按钮状态
+				// 4.修改按钮状态
 				olsrd_switch.setImageResource(R.drawable.power_on_icon);
 			} else {
 				// 关闭路由 
 				app.stopService(); 
 				routeRunning = false;
 				olsrd_switch.setImageResource(R.drawable.power_off_icon);
+				tv_deviceip.setText(generateTips(routeRunning));
 			}
-
 		}
-
 	}
 
 	@Override
@@ -269,8 +256,19 @@ public class MainActivity extends Activity implements OnClickListener {
 		super.onDestroy();
 	}
 
-	private String generateDeviceName(String dest) {
-		return "<html>节点<em>" + dest + "</em>的路由表</html>";
+	private String generateTips(boolean routeRunning) {
+		String result = "";
+		if (routeRunning) {
+			String localIP = IPUtils.getAdhocIpString();
+			if (localIP != null) {
+				result = "节点" + localIP + "的路由表";
+			} else {
+				result = "程序异常";
+			}
+		} else {
+			result = "未开启Ad-hoc路由";
+		}
+		return result;
 	}
 
 	public class InfoHandler extends Handler {

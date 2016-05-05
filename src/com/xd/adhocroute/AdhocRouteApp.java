@@ -3,13 +3,13 @@ package com.xd.adhocroute;
 import android.app.Application;
 import android.content.Intent;
 
-import com.xd.adhocroute.utils.PrometheusServices;
+import com.xd.adhocroute.utils.RouteServices;
 
 public class AdhocRouteApp extends Application {
 	public static String TAG = "AdhocRoute";
-	public PrometheusServices service = null;
+	public RouteServices service = null;
 
-	public void serviceStarted(PrometheusServices s) {
+	public void serviceStarted(RouteServices s) {
 		service = s;
 		service.startOLSR();
 	}
@@ -20,7 +20,7 @@ public class AdhocRouteApp extends Application {
 	}
 
 	public void startService() {
-		startService(new Intent(this, PrometheusServices.class));
+		startService(new Intent(this, RouteServices.class));
 	}
 
 	public void stopService() {
@@ -29,4 +29,5 @@ public class AdhocRouteApp extends Application {
 			service.stopSelf();
 		}
 	}
+	
 }

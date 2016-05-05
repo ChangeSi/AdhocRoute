@@ -87,11 +87,9 @@ public class NativeHelper {
 			Method setPermissions = fileUtils.getMethod("setPermissions", String.class,
 					int.class, int.class, int.class);
 			int mode = Integer.parseInt(modestr, 8);
-			int a = (Integer) setPermissions.invoke(null, path.getAbsolutePath(), mode,
-					-1, -1);
+			int a = (Integer) setPermissions.invoke(null, path.getAbsolutePath(), mode, -1, -1);
 			if (a != 0) {
-				Log.i(TAG, "ERROR: android.os.FileUtils.setPermissions() returned " + a
-						+ " for '" + path + "'");
+				Log.i(TAG, "ERROR: android.os.FileUtils.setPermissions() returned " + a + " for '" + path + "'");
 			}
 		} catch (ClassNotFoundException e) {
 			Log.i(TAG, "android.os.FileUtils.setPermissions() failed:", e);
@@ -134,7 +132,6 @@ public class NativeHelper {
 			e.printStackTrace();
 		}
 		// 
-		
 		
 		
 	}
