@@ -57,7 +57,6 @@ public class MainActivity extends Activity implements OnClickListener {
 		adapter = new RouteAdapter(routeTables, this);
 		lvRoute.setAdapter(adapter);
 		timer = new Timer();
-		timer.schedule(new RefreshTimeTask(), 1000, 3000);
 	}
 
 	private void initUI() {
@@ -128,7 +127,7 @@ public class MainActivity extends Activity implements OnClickListener {
 		if (v.getId() == R.id.ib_olsrd) {
 			if (!routeRunning) { 
 				// 开启路由 
-				
+/*				
 				// 1.创建Ad-Hoc网络 
 				adhocRun.constructAdhoc(); 
 				// 2.修改节点IP显示
@@ -148,10 +147,13 @@ public class MainActivity extends Activity implements OnClickListener {
 				NativeHelper.updateConfig(this);
 				
 				routeRunning = true; 
+				
 				// 3.使用命令执行路由
 				app.startService();
 				// 4.修改按钮状态
 				olsrd_switch.setImageResource(R.drawable.power_on_icon);
+*/
+				timer.schedule(new RefreshTimeTask(), 1000, 3000);
 			} else {
 				// 关闭路由 
 				app.stopService(); 

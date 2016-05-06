@@ -35,7 +35,7 @@ public class JsonInfo {
 	private String lastCommand = "";
 
 	String host = "127.0.0.1";
-	int port = 8118;
+	int port = 9999;
 
 	ObjectMapper mapper = null;
 
