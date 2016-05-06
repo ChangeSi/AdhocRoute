@@ -28,6 +28,7 @@ import com.xd.adhocroute.data.Node;
 import com.xd.adhocroute.data.OlsrDataDump;
 import com.xd.adhocroute.data.Plugin;
 import com.xd.adhocroute.data.Route;
+import com.xd.adhocroute.log.Lg;
 
 public class JsonInfo {
 
@@ -79,7 +80,7 @@ public class JsonInfo {
 			lastCommand = cmdString;
 			for (String s : cmdString.split("/")) {
 				if ( !s.equals("") && !supportedCommands.contains(s)) {
-					System.out.println("Unsupported command: " + s);
+					Lg.d("Unsupported command: " + s);
 					isValid = false;
 				}
 			}
@@ -133,6 +134,8 @@ public class JsonInfo {
 		}
 		return ret;
 	}
+	
+	// 最好修改一下，ret为null表明未请求到数据
 	public OlsrDataDump parseCommand(String cmd) {
 		if (mapper == null)
 			mapper = new ObjectMapper();
@@ -140,6 +143,7 @@ public class JsonInfo {
 		try {
 			String dump = command(cmd);
 			if (! dump.contentEquals(""))
+				// 等于""说明请求数据失败了
 				ret = mapper.readValue(dump, OlsrDataDump.class);
 			ret.setRaw(dump);
 		} catch (JsonParseException e) {
@@ -222,32 +226,32 @@ public class JsonInfo {
 	public static void main(String[] args) throws IOException {
 		JsonInfo jsoninfo = new JsonInfo();
 		OlsrDataDump dump = jsoninfo.all();
-		System.out.println("gateways:");
+		Lg.d("gateways:");
 		for (Gateway g : dump.gateways)
-			System.out.println("\t" + g.ipAddress);
-		System.out.println("hna:");
+			Lg.d("\t" + g.ipAddress);
+		Lg.d("hna:");
 		for (HNA h : dump.hna)
-			System.out.println("\t" + h.destination);
-		System.out.println("Interfaces:");
+			Lg.d("\t" + h.destination);
+		Lg.d("Interfaces:");
 		for (Interface i : dump.interfaces)
-			System.out.println("\t" + i.name);
-		System.out.println("Links:");
+			Lg.d("\t" + i.name);
+		Lg.d("Links:");
 		for (Link l : dump.links)
-			System.out.println("\t" + l.localIP + " <--> " + l.remoteIP);
-		System.out.println("MID:");
+			Lg.d("\t" + l.localIP + " <--> " + l.remoteIP);
+		Lg.d("MID:");
 		for (MID m : dump.mid)
-			System.out.println("\t" + m.ipAddress);
-		System.out.println("Neighbors:");
+			Lg.d("\t" + m.ipAddress);
+		Lg.d("Neighbors:");
 		for (Neighbor n : dump.neighbors)
-			System.out.println("\t" + n.ipv4Address);
-		System.out.println("Plugins:");
+			Lg.d("\t" + n.ipv4Address);
+		Lg.d("Plugins:");
 		for (Plugin p : dump.plugins)
-			System.out.println("\t" + p.plugin);
-		System.out.println("Routes:");
+			Lg.d("\t" + p.plugin);
+		Lg.d("Routes:");
 		for (Route r : dump.routes)
-			System.out.println("\t" + r.destination);
-		System.out.println("Topology:");
+			Lg.d("\t" + r.destination);
+		Lg.d("Topology:");
 		for (Node node : dump.topology)
-			System.out.println("\t" + node.destinationIP);
+			Lg.d("\t" + node.destinationIP);
 	}
 }

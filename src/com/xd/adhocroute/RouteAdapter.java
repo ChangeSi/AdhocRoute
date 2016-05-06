@@ -10,17 +10,17 @@ import android.widget.BaseAdapter;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
-import com.xd.adhocroute.data.RouteItem;
+import com.xd.adhocroute.data.Route;
 
-public class RouteAdapter extends BaseAdapter implements ListAdapter {
+public class RouteAdapter extends BaseAdapter{
 
 	public Context context;
-	private List<RouteItem> routeTables;
-	public RouteAdapter(List<RouteItem> routeTables, Context context) {
+	private List<Route> routeTables;
+	public RouteAdapter(List<Route> routeTables, Context context) {
 		this.context = context;
 		this.routeTables = routeTables;
 	}
-	public void update(List<RouteItem> routeTables){
+	public void update(List<Route> routeTables){
 		this.routeTables = routeTables;
 		notifyDataSetChanged();
 	}
@@ -56,12 +56,12 @@ public class RouteAdapter extends BaseAdapter implements ListAdapter {
 			holder = (ViewHolder) convertView.getTag();
 		}
 		
-		holder.tvDest.setText(routeTables.get(position).getDestination());
-		holder.tvmask.setText(routeTables.get(position).getGenmask() + "");
-		holder.tvGateway.setText(routeTables.get(position).getGateway());
-		holder.tvMetric.setText(routeTables.get(position).getMetric() + "");
-		holder.tvETX.setText(routeTables.get(position).getRtpMetricCost() + "");
-		holder.tvInterface.setText(routeTables.get(position).getNetworkInterface());
+		holder.tvDest.setText(routeTables.get(position).destination);
+		holder.tvmask.setText(routeTables.get(position).genmask + "");
+		holder.tvGateway.setText(routeTables.get(position).gateway);
+		holder.tvMetric.setText(routeTables.get(position).metric + "");
+		holder.tvETX.setText(routeTables.get(position).rtpMetricCost + "");
+		holder.tvInterface.setText(routeTables.get(position).networkInterface);
 		return convertView;
 	}
 

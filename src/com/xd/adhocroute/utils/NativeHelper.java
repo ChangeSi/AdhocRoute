@@ -2,16 +2,12 @@ package com.xd.adhocroute.utils;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.text.Normalizer;
-import java.util.HashMap;
-import java.util.Map;
 
 import android.content.Context;
 import android.content.SharedPreferences;

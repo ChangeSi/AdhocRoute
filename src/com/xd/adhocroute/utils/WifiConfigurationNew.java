@@ -1,16 +1,12 @@
 package com.xd.adhocroute.utils;
 
-import android.net.wifi.WifiConfiguration;
-
-
-
-import android.net.wifi.WifiConfiguration;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
 import java.util.ArrayList;
+
+import android.net.wifi.WifiConfiguration;
 
 	/**
 	 * This class extends WifiConfiguration to provide access to the new Ad-hoc

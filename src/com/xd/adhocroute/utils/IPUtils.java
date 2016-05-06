@@ -11,7 +11,6 @@ import org.apache.http.conn.util.InetAddressUtils;
 import android.util.Log;
 
 public class IPUtils {
-	private static final String TAG = "Util";
 	private static Pattern IpPattern;
 	private static String WIFI_DEV_NAME = null;
 	private static String WIFI_IP_ADDR = null;
@@ -21,7 +20,6 @@ public class IPUtils {
 			return WIFI_IP_ADDR;
 		}
         try { 
-
             for (Enumeration<NetworkInterface> en = NetworkInterface 
                     .getNetworkInterfaces(); en.hasMoreElements();) { 
                 NetworkInterface intf = en.nextElement(); 

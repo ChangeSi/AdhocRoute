@@ -84,7 +84,6 @@ public class AdhocRun {
 	    		if (tempConfig != null) {
 	    			wifiManager.removeNetwork(tempConfig.networkId);
 	    		}
-	    		
 				int id = wifiManager.addNetwork(wifiConfig);
 				if (id < 0) {
 					Log.i(AdhocRouteApp.TAG, "Failed to add Ad-hoc network");

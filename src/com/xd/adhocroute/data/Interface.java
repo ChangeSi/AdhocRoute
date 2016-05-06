@@ -2,17 +2,6 @@ package com.xd.adhocroute.data;
 
 import java.util.Collection;
 
-/**
- * A network interface from the list of interfaces that <tt>olsrd</tt> is aware
- * of at runtime.
- * 
- * Written as part of the Commotion Wireless project
- * 
- * @author Hans-Christoph Steiner <hans@eds.org>
- * @see <a
- *      href="https://code.commotionwireless.net/projects/commotion/wiki/OLSR_Configuration_and_Management">OLSR
- *      Configuration and Management</a>
- */
 public class Interface {
 	public String name;
 	public String nameFromKernel;
