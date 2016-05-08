@@ -6,18 +6,18 @@
         <EditTextPreference
             android:key="ssid"
             android:singleLine="true"
-            android:title="SSID (Network Name)"
+            android:title="SSID"
             android:defaultValue="Android-Ad-Hoc"
              />
         <ListPreference
             android:key="lan_channel"
             android:title="channel" />
         
-        <EditTextPreference
+        <com.xd.adhocroute.route.IPPreference
             android:key="adhoc_ip"
             android:singleLine="true"
             android:title="Node IP" />
-		<EditTextPreference
+		<com.xd.adhocroute.route.IPPreference
             android:key="adhoc_mask"
             android:singleLine="true"
             android:title="Adhoc Mask"
@@ -31,7 +31,7 @@
     </PreferenceCategory>
 
     <PreferenceCategory android:title="路由设置" >
-        <EditTextPreference
+        <com.xd.adhocroute.route.IPMaskPreference
             android:key="wan"
             android:singleLine="true"
             android:hint="网络和掩码用空格隔开"
@@ -45,6 +45,23 @@
             android:key="open_gateway"
             android:singleLine="true"
             android:title="开启网关功能" />
+    </PreferenceCategory>
+    
+    <PreferenceCategory android:title="NAT设置" >
+        <CheckBoxPreference
+            android:key="open_gateway"
+            android:singleLine="true"
+            android:title="开启NAT功能" />
+        <EditTextPreference
+            android:key="natnet"
+            android:singleLine="true"
+            android:hint="如192.168.2.0/24"
+            android:title="子网号" />
+        <EditTextPreference
+            android:key="natip"
+            android:singleLine="true"
+            android:title="映射ip"
+            android:defaultValue="wlan0" />
     </PreferenceCategory>
 
 </PreferenceScreen>
