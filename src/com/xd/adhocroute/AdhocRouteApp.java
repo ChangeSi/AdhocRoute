@@ -5,7 +5,7 @@ import android.content.Intent;
 
 import com.xd.adhocroute.log.Lg;
 import com.xd.adhocroute.log.WriteLogger;
-import com.xd.adhocroute.utils.RouteServices;
+import com.xd.adhocroute.route.RouteServices;
 
 public class AdhocRouteApp extends Application {
 	public static String TAG = "AdhocRoute";

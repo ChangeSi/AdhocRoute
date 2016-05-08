@@ -16,6 +16,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.xd.adhocroute.AdhocRouteApp;
+import com.xd.adhocroute.route.Config;
 
 public class NativeHelper {
 	public static final String TAG = "NativeHelper";

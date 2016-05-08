@@ -179,7 +179,7 @@ public class MainActivity extends Activity implements OnClickListener {
 			if (localIP != null) {
 				result = "节点" + localIP + "的路由表";
 			} else {
-				result = "程序异常";
+				result="程序异常";
 			}
 		} else {
 			result = "未开启Ad-hoc路由";
