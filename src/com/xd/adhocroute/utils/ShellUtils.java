@@ -11,6 +11,33 @@ public class ShellUtils {
     private static final String CHECK_ROOT = "cd /data/data";
 	public static final String COMMAND_SU = "su";
     
+	public static void safeStopOlsrd(String olsrdKillCMD) {
+    	exec(olsrdKillCMD);
+    	int i = 0;
+    	
+    	while (i < 5 && !checkOlsrStoped()/*检查是否已经启动了这个进程*/) {
+    		try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+    		exec(olsrdKillCMD);
+    		i++;
+    	}
+    	if(5 == i) {
+    	}
+	}
+	
+	
+	
+	
+	private static boolean checkOlsrStoped() {
+		return true;
+	}
+
+
+
+
 	public static void safeStartOlsrd(String olsrdStartCMD) {
     	exec(olsrdStartCMD);
     	int i = 0;
@@ -51,13 +78,6 @@ public class ShellUtils {
 		}
 		return false;
 	}
-
-	
-
-	
-	
-	
-	
 	
     public static boolean exec(String cmd) {
     	Lg.d("adhocroute-test 开始执行exec");

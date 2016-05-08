@@ -28,9 +28,6 @@ import com.xd.adhocroute.utils.IPUtils;
 import com.xd.adhocroute.utils.NativeHelper;
 import com.xd.adhocroute.R;
 public class MainActivity extends Activity implements OnClickListener {
-	final static int MSG_OUTPUT = 1;
-	final static int MSG_ERROR = 2;
-	final static int MSG_PID = 3;
 
 	private boolean routeRunning;
 	private ImageButton olsrd_switch;
@@ -50,7 +47,7 @@ public class MainActivity extends Activity implements OnClickListener {
 		super.onCreate(savedInstanceState);
 		app = (AdhocRouteApp) getApplication();
 		setContentView(R.layout.activity_main);
-		handler = new InfoHandler();
+		handler = new Handler();
 		adhocRun = new AdhocRun(this);
 		adhocRun.startScanThread();
 		routeRefresh = new RouteRefresh();
@@ -186,89 +183,4 @@ public class MainActivity extends Activity implements OnClickListener {
 		}
 		return result;
 	}
-
-	public class InfoHandler extends Handler {
-		@Override
-		public void handleMessage(Message msg) {
-
-		}
-	}
 }
-
-
-/*
-	@ Deprecated
-	private boolean startProcess() {
-		// Process process = Runtime.getRuntime().exec(new
-		// String[]{"/system/xbin/su","-c",
-		// "/data/data/com.xd.adhocroute/app_bin/olsrd -f /data/data/com.xd.adhocroute/files/olsrd.conf -d 0 -i wlan0"});
-		// Process process =
-		// Runtime.getRuntime().exec("/system/xbin/su /data/data/com.xd.adhocroute/app_bin/olsrd -f /data/data/com.xd.adhocroute/files/olsrd.conf -d 0 -i wlan0");
-		// RouteUtils.execCmd("/data/data/com.xd.adhocroute/app_bin/olsrd -f /data/data/com.xd.adhocroute/files/olsrd.conf -d 0 -i wlan0");
-
-		// try {
-		// RouteUtils.exec("/data/data/com.xd.adhocroute/app_bin/olsrd -f /data/data/com.xd.adhocroute/files/olsrd.conf -d 1 -i wlan0");
-		// } catch (IOException e) {
-		// e.printStackTrace();
-		// } catch (InterruptedException e) {
-		// e.printStackTrace();
-		// }
-
-		// ShellUtils.execCommand(new String[]{"su 1"}, true);
-		// ShellUtils.execCommand(new String[]{"",
-		// "/data/data/com.xd.adhocroute/app_bin/olsrd -f /data/data/com.xd.adhocroute/files/olsrd.conf -d 0 -i wlan0"},
-		// true);
-
-		// TODO:
-		// 存在问题，Android手机上可以执行
-		// 红米2A上有问题：执行不了root权限的命令
-		try {
-			Process process = Runtime.getRuntime().exec(
-					"su mkdir /data/data/test");
-			threads[0] = new Thread(new OutputMonitor(MSG_OUTPUT,
-					process.getInputStream()));
-			threads[1] = new Thread(new OutputMonitor(MSG_ERROR,
-					process.getErrorStream()));
-			threads[0].start();
-			threads[1].start();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return true;
-	}
-
-
-	private class OutputMonitor implements Runnable {
-		private final java.io.BufferedReader br;
-		private final int msg;
-
-		public OutputMonitor(int t, java.io.InputStream is) {
-			br = new java.io.BufferedReader(new java.io.InputStreamReader(is),
-					8192);
-			msg = t;
-		}
-
-		public void run() {
-			try {
-				String line = br.readLine();
-				while (line != null) {
-					Log.e("##########", line);
-					// if (line.contains(olsrdPath)) {
-					// String pidStr = line.split("\\s+")[1];
-					// int pid = Integer.valueOf(pidStr);
-					// handler.obtainMessage(MSG_PID, pid).sendToTarget();
-					// }
-					line = br.readLine();
-					// 处理进程Process的消息
-					// handler.obtainMessage(msg, line).sendToTarget(); // NOTE:
-					// the last null is also sent!
-				}
-			} catch (Exception e) {
-				// 处理进程Process的消息
-				Log.i(AdhocRouteApp.TAG,
-						"shell start olsr failed: " + e.toString());
-			}
-		}
-	}
-
- */
