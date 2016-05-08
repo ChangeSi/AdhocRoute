@@ -1,12 +1,15 @@
 package com.xd.adhocroute.log;
 
 
+import com.xd.adhocroute.AdhocRouteApp;
+
 import android.text.format.DateFormat;
 import android.util.Log;
 
 public class Lg {
     // private static final boolean DEBUG = true;
-    private static String TAG = "lg";
+    private static String TAG = AdhocRouteApp.TAG;
+
     private static WriteLogger logger;
     private static boolean debug;
 

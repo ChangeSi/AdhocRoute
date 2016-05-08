@@ -2,6 +2,8 @@ package com.xd.adhocroute;
 
 import java.util.List;
 
+import com.xd.adhocroute.route.IPPreference;
+
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.net.wifi.WifiChannel;
@@ -18,8 +20,8 @@ public class SettingsActivity extends PreferenceActivity implements
 	private SharedPreferences sp;
 	private EditTextPreference ssid;
 	private ListPreference channel;
-	private EditTextPreference ip;
-	private EditTextPreference mask;
+	private IPPreference ip;
+	private IPPreference mask;
 	private EditTextPreference wan;
 	private String [] channelEntry;
 
@@ -47,8 +49,8 @@ public class SettingsActivity extends PreferenceActivity implements
 	private void init() {
 		ssid = (EditTextPreference) findPreference("ssid");
 		channel = (ListPreference) findPreference("lan_channel");
-		ip = (EditTextPreference) findPreference("adhoc_ip");
-		mask = (EditTextPreference) findPreference("adhoc_mask");
+		ip = (IPPreference) findPreference("adhoc_ip");
+		mask = (IPPreference) findPreference("adhoc_mask");
 		wan = (EditTextPreference) findPreference("wan");
 		channel.setEntryValues(getAllChannels());
 		channel.setValue(sp.getString("lan_channel", channelEntry[0]));
@@ -76,7 +78,6 @@ public class SettingsActivity extends PreferenceActivity implements
 		}
 		return channelName;
 	}
-	
 	
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,

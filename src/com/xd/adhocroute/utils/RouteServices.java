@@ -14,6 +14,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.xd.adhocroute.AdhocRouteApp;
+import com.xd.adhocroute.log.Lg;
 
 public class RouteServices extends Service {
 	
@@ -86,10 +87,7 @@ public class RouteServices extends Service {
 		super.onDestroy();
 	}
 	private void startProcess() {
-		if (!ShellUtils.exec(OLSR_START)) {
-			// 路由启动失败
-			
-		}
+		ShellUtils.safeStartOlsrd(OLSR_START);
 	}
 	
 	private void stopProcess() {
@@ -101,12 +99,12 @@ public class RouteServices extends Service {
 			BufferedReader br = new BufferedReader(new java.io.InputStreamReader(process.getInputStream()));
 			String line = br.readLine();;
             while(line != null){
-                line = br.readLine();
                 if (line.contains(CMD_OLSR)) {
 					String pidStr = line.split("\\s+")[1];
 					int pid = Integer.valueOf(pidStr);
 					handler.obtainMessage(MSG_PID, pid).sendToTarget();
 				}
+                line = br.readLine();
             }
 			process.waitFor();
 		} catch (Exception e) {
@@ -117,6 +115,7 @@ public class RouteServices extends Service {
 	public void startOLSR() {
 		Log.i(AdhocRouteApp.TAG, "startOLSRD");
 		startProcess();
+		Lg.d("adhocroute-test 执行完了startProcess");
 	}
 	
 	public void stopOLSR() {

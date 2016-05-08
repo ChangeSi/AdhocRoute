@@ -15,6 +15,7 @@ public class AdhocRouteApp extends Application {
 	public void onCreate() {
 		super.onCreate();
 		Lg.setLogger(WriteLogger.getInstance(getApplicationContext()));
+		Lg.setDebug(true);
 	}
 	public void serviceStarted(RouteServices s) {
 		service = s;
