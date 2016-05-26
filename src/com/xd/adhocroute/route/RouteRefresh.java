@@ -1,14 +1,12 @@
 package com.xd.adhocroute.route;
 
 import java.lang.ref.WeakReference;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import android.os.Handler;
 
 import com.xd.adhocroute.data.OlsrDataDump;
-import com.xd.adhocroute.data.Route;
 
 public class RouteRefresh {
 	protected static final int REFRESH_SUCCESS = 0X01;
@@ -16,7 +14,7 @@ public class RouteRefresh {
 	public static final int REFRESH_UNSTARTED = 0x03;
 	private Callback refreshListener;
 	private ExecutorService exec = Executors.newSingleThreadExecutor();
-	
+	private Handler handler = new MyHandler(this);
 	private static class MyHandler extends Handler{
 		WeakReference<RouteRefresh> outerReference;
 		
@@ -36,12 +34,9 @@ public class RouteRefresh {
 			default:
 				break;
 			}
-		}		
-		
+		}
 	}
 	
-	private Handler handler = new MyHandler(this);
-
 	public void refreshRoute(Callback refreshListener) {
 		this.refreshListener = refreshListener;
 		exec.execute(new RefreshRunnable());

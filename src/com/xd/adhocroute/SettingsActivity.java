@@ -2,8 +2,6 @@ package com.xd.adhocroute;
 
 import java.util.List;
 
-import com.xd.adhocroute.route.IPPreference;
-
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.net.wifi.WifiChannel;
@@ -14,9 +12,11 @@ import android.preference.ListPreference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 
+import com.xd.adhocroute.route.IPPreference;
+
 public class SettingsActivity extends PreferenceActivity implements
 		OnSharedPreferenceChangeListener {
-
+	
 	private SharedPreferences sp;
 	private EditTextPreference ssid;
 	private ListPreference channel;

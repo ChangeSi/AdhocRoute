@@ -5,8 +5,8 @@ import java.io.OutputStream;
 
 import com.xd.adhocroute.route.RouteServices;
 
+@Deprecated
 public class ShellUtils {
-
     private static final String CHECK_ROOT = "cd /data/data";
 	public static final String COMMAND_SU = "su";
     

@@ -30,7 +30,12 @@ public class NativeHelper {
 	private static String OLSRD_DYN_GW;
 	private static String OLSRD_CONF;
 
-	// 
+	public static void configAPP(Context context) {
+		setup(context);
+		unzipAssets(context);
+		updateConfig(context);
+	}
+
 	public static void setup(Context context) {
 		app_bin = context.getDir("bin", Context.MODE_PRIVATE).getAbsoluteFile();
 		OLSRD = new File(app_bin, "olsrd").getAbsolutePath();

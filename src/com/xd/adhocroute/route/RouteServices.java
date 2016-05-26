@@ -1,8 +1,6 @@
 package com.xd.adhocroute.route;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.OutputStream;
 
 import android.app.Service;
 import android.content.Context;
@@ -10,15 +8,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
 import com.xd.adhocroute.AdhocRouteApp;
-import com.xd.adhocroute.MainActivity;
-import com.xd.adhocroute.utils.ShellUtils;
 
 public class RouteServices extends Service {
-	public static final String PS = "ps";
-	public static final String OLSR_KILL = "kill ";
 	public static final String CMD_OLSR = "app_bin/olsrd";
 	public static final String DNS = "su setprop net.dns1 8.8.8.8";
 	
@@ -47,7 +40,7 @@ public class RouteServices extends Service {
 		olsrdConfPath = new File(getFilesDir(), "olsrd.conf").getAbsolutePath();
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
 		String inface = sp.getString("interface", "wlan0");
-		OLSR_START = olsrdPath + " -f " +  olsrdConfPath + " -d 0" + " -i " + inface;
+		OLSR_START = olsrdPath + " -f " +  olsrdConfPath + " -i " + inface;
 	}
 	
 	@Override
@@ -62,70 +55,17 @@ public class RouteServices extends Service {
 		super.onDestroy();
 	}
 	
-	private void startProcess() {
-		((AdhocRouteApp)getApplication()).getGlobalThreadPool().execute(new Runnable() {
-			@Override
-			public void run() {
-				Intent intent = new Intent(MainActivity.ACTION_DIALOG_HIDE_BROADCASTRECEIVER);
-				System.out.println("------------------" + OLSR_START);
-				if (ShellUtils.safeStartOlsrd(OLSR_START)) {
-					intent.putExtra("isStarted", true);
-				} else {
-					intent.putExtra("isStarted", false);
-				}
-				sendBroadcast(intent);
-			}
-		});
-		
-	}
-	
-	private void stopProcess() {
-		try {
-			Process process = Runtime.getRuntime().exec("su");
-			OutputStream os = process.getOutputStream();
-			os.write(PS.getBytes());
-			os.close();
-			BufferedReader br = new BufferedReader(new java.io.InputStreamReader(process.getInputStream()));
-			String line = br.readLine();
-            while(line != null){
-                if (line.contains(CMD_OLSR)) {
-					String pidStr = line.split("\\s+")[1];
-					int pid = Integer.valueOf(pidStr);
-					((AdhocRouteApp)getApplication()).getGlobalThreadPool().execute(new KillOlsrRunnable(pid));
-				}
-                line = br.readLine();
-            }
-			process.waitFor();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
 	public void startOLSR() {
-		startProcess();
+		app.startProcess(OLSR_START);
 	}
 	
 	public void stopOLSR() {
-		Log.i(AdhocRouteApp.TAG, "stopOLSRD");
-		stopProcess();
+		app.stopProcess(CMD_OLSR);
 	}
-
 
 	@Override
 	public IBinder onBind(Intent intent) {
 		return null;
 	}
 	
-	public static class KillOlsrRunnable implements Runnable {
-		
-		private final int pid;
-		
-		public KillOlsrRunnable(int pid) {
-			this.pid = pid;
-		}
-		@Override
-		public void run() {
-			ShellUtils.safeStopOlsrd(OLSR_KILL + pid);
-		}
-	}
 }
