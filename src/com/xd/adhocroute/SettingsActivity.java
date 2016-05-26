@@ -47,14 +47,14 @@ public class SettingsActivity extends PreferenceActivity implements
 	}
 	
 	private void init() {
-		ssid = (EditTextPreference) findPreference("ssid");
-		channel = (ListPreference) findPreference("lan_channel");
-		ip = (IPPreference) findPreference("adhoc_ip");
-		mask = (IPPreference) findPreference("adhoc_mask");
+//		ssid = (EditTextPreference) findPreference("ssid");
+//		channel = (ListPreference) findPreference("lan_channel");
+//		ip = (IPPreference) findPreference("adhoc_ip");
+//		mask = (IPPreference) findPreference("adhoc_mask");
 		wan = (EditTextPreference) findPreference("wan");
-		channel.setEntryValues(getAllChannels());
-		channel.setValue(sp.getString("lan_channel", channelEntry[0]));
-		channel.setEntries(getAllChannelNames());
+//		channel.setEntryValues(getAllChannels());
+//		channel.setValue(sp.getString("lan_channel", channelEntry[0]));
+//		channel.setEntries(getAllChannelNames());
 	}
 
 	private String [] getAllChannels() {

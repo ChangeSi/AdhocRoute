@@ -46,7 +46,7 @@ public class IPMaskPreference extends EditTextPreference {
 		if (positiveResult) {
 			// verify now that it's an IP
 			String addr = getEditText().getText().toString();
-			if (!addr.equals("") && !validate(addr)) {
+			if (!addr.equals("") && !validate(addr) && !addr.equals("0.0.0.0 0.0.0.0")) {
 				Toast.makeText(getContext(), "格式不正确", Toast.LENGTH_LONG).show();
 				positiveResult = false;
 			}

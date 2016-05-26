@@ -20,6 +20,7 @@ public class AdhocRun {
 	private WifiManager wifiManager;
 	private WifiConfigurationNew wifiConfig;
 //	private boolean showScan = true;
+	private int networkID;
 
 	public AdhocRun(Context context) {
 		this.context = context;
@@ -59,7 +60,23 @@ public class AdhocRun {
 			wifiManager.startScan();
 		}
 	}
-
+	
+	public void exitAdhoc(){
+		disConnectionWifi(networkID);
+		closeWifi();
+	}
+	
+	private void disConnectionWifi(int netId) {
+		wifiManager.disableNetwork(netId);
+		wifiManager.disconnect();
+	}
+	
+	private void closeWifi() {
+        if (wifiManager.isWifiEnabled()) {
+            wifiManager.setWifiEnabled(false);
+        }
+    }
+	
 	public boolean constructAdhoc() {
 		startScan();
 //		showScan = false;
@@ -84,12 +101,12 @@ public class AdhocRun {
 	    		if (tempConfig != null) {
 	    			wifiManager.removeNetwork(tempConfig.networkId);
 	    		}
-				int id = wifiManager.addNetwork(wifiConfig);
-				if (id < 0) {
+				networkID = wifiManager.addNetwork(wifiConfig);
+				if (networkID < 0) {
 					Log.i(AdhocRouteApp.TAG, "Failed to add Ad-hoc network");
-					Toast.makeText(context, "Failed to add Ad-hoc network" + id, 0).show();
+					Toast.makeText(context, "Failed to add Ad-hoc network" + networkID, 0).show();
 				} else {
-					wifiManager.enableNetwork(id, true);
+					wifiManager.enableNetwork(networkID, true);
 					wifiManager.saveConfiguration();
 				}
 			} catch (Exception e) {

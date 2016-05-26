@@ -13,7 +13,7 @@ import com.xd.adhocroute.data.Route;
 public class RouteRefresh {
 	protected static final int REFRESH_SUCCESS = 0X01;
 	protected static final int REFRESH_FAILED = 0X02;
-	public static final int REFRESH_HOST_UBREACHABLE = 0x03;
+	public static final int REFRESH_UNSTARTED = 0x03;
 	private Callback refreshListener;
 	private ExecutorService exec = Executors.newSingleThreadExecutor();
 	
@@ -28,10 +28,10 @@ public class RouteRefresh {
 			if (routeRefresh == null) return;
 			switch (msg.what) {
 			case REFRESH_SUCCESS:
-				routeRefresh.refreshListener.onSuccess((List<Route>) msg.obj);
+				routeRefresh.refreshListener.onSuccess((OlsrDataDump) msg.obj);
 				break;
-			case REFRESH_HOST_UBREACHABLE:
-				routeRefresh.refreshListener.onException(REFRESH_HOST_UBREACHABLE);
+			case REFRESH_UNSTARTED:
+				routeRefresh.refreshListener.onException(REFRESH_UNSTARTED);
 				break;
 			default:
 				break;
@@ -54,17 +54,17 @@ public class RouteRefresh {
 			OlsrDataDump olsrDataDump = jsonInfo.all();
 			if (olsrDataDump.getRaw().equals("")) {
 				// 路由未开启
-				handler.sendEmptyMessage(REFRESH_HOST_UBREACHABLE);
+				handler.sendEmptyMessage(REFRESH_UNSTARTED);
 			}
 			else {
 				// 开启了路由可以看到信息
-				handler.obtainMessage(REFRESH_SUCCESS, olsrDataDump.routes).sendToTarget();
+				handler.obtainMessage(REFRESH_SUCCESS, olsrDataDump).sendToTarget();
 			}
 		}
 	}
 
 	public interface Callback {
-		public void onSuccess(List<Route> routeTables);
+		public void onSuccess(OlsrDataDump olsrDataDump);
 		public void onException(int exception);
 	}
 

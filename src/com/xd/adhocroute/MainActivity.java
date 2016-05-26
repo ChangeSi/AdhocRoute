@@ -1,15 +1,20 @@
 package com.xd.adhocroute;
 
+import java.io.BufferedReader;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,59 +22,69 @@ import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.xd.adhocroute.data.Interface;
+import com.xd.adhocroute.data.OlsrDataDump;
 import com.xd.adhocroute.data.Route;
-import com.xd.adhocroute.log.Lg;
-import com.xd.adhocroute.route.AdhocRun;
 import com.xd.adhocroute.route.RouteAdapter;
 import com.xd.adhocroute.route.RouteRefresh;
 import com.xd.adhocroute.route.RouteRefresh.Callback;
+import com.xd.adhocroute.route.RouteServices;
+import com.xd.adhocroute.route.RouteServices.KillOlsrRunnable;
 import com.xd.adhocroute.utils.IPUtils;
 import com.xd.adhocroute.utils.NativeHelper;
-import com.xd.adhocroute.R;
 public class MainActivity extends Activity implements OnClickListener {
 
+	public static final String ACTION_DIALOG_SHOW_BROADCASTRECEIVER = "action.dialog.show";
+	public static final String ACTION_DIALOG_HIDE_BROADCASTRECEIVER = "action.dialog.hide";
 	private boolean routeRunning;
 	private ImageButton olsrd_switch;
-	private TextView tv_deviceip;
-	private AdhocRun adhocRun;
+//	private AdhocRun adhocRun;
 	private List<Route> routeTables = new ArrayList<Route>();
-	private Handler handler;
 	private AdhocRouteApp app;
 	private ListView lvRoute;
 	private Timer timer;
 	private RouteRefresh routeRefresh;
-	private TextView tvTips;
+	private TextView tvinfo;
 	private RouteAdapter adapter;
-
+	private ProgressDialog tipDialog;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		app = (AdhocRouteApp) getApplication();
 		setContentView(R.layout.activity_main);
-		handler = new Handler();
-		adhocRun = new AdhocRun(this);
-		adhocRun.startScanThread();
+//		adhocRun = new AdhocRun(this);
+//		adhocRun.startScanThread();
 		routeRefresh = new RouteRefresh();
+		registerDialogBroadcastReceiver();
 		initUI();
 		setSwitchState();
 		adapter = new RouteAdapter(routeTables, this);
 		lvRoute.setAdapter(adapter);
 		timer = new Timer();
+		timer.schedule(new RefreshTimeTask(), 0, 1000);
 	}
 
 	private void initUI() {
 		lvRoute = (ListView) findViewById(R.id.lv_route);
 		olsrd_switch = (ImageButton) findViewById(R.id.ib_olsrd);
-		tv_deviceip = (TextView) findViewById(R.id.tv_deviceip);
-		tvTips = (TextView) findViewById(R.id.tv_tips);
+//		tvTips = (TextView) findViewById(R.id.tv_tips);
+		tvinfo = (TextView) findViewById(R.id.tv_info);
 		olsrd_switch.setOnClickListener(this);
-		tv_deviceip.setText(generateTips(routeRunning));
 	}
 
 	private void setSwitchState() {
 		
 		if (app.service == null) {
+			// service为null说明首次启动手机
+			((AdhocRouteApp)getApplication()).getGlobalThreadPool().execute(new Runnable() {
+				@Override
+				public void run() {
+					stopProcess();
+				}
+			});
+			
 			routeRunning = false;
 			olsrd_switch.setImageResource(R.drawable.power_off_icon);
 		} else {
@@ -83,21 +98,24 @@ public class MainActivity extends Activity implements OnClickListener {
 		public void run() {
 			routeRefresh.refreshRoute(new Callback() {
 				@Override
-				public void onSuccess(List<Route> routeTables) {
-					if (routeTables.size() == 0) {
-						tvTips.setText("路由正在初始化");
-					} else {
-						tvTips.setText("");
+				public void onSuccess(OlsrDataDump olsrDataDump) {
+					List<Interface> interfaces = (List<Interface>)olsrDataDump.interfaces;
+					if (interfaces != null && interfaces.size() != 0) {
+						Interface inface = interfaces.get(0);
+						tvinfo.setText("IP：" + inface.ipv4Address + "\n"
+									 + "网卡：" + inface.name + "\n"
+									 + "mac地址：" + inface.macAddress
+										);
 					}
-					adapter.update(routeTables);
+					adapter.update((List<Route>)olsrDataDump.routes);
 				}
 
 				@Override
 				public void onException(int exception) {
-					if (exception == RouteRefresh.REFRESH_HOST_UBREACHABLE) {
+					if (exception == RouteRefresh.REFRESH_UNSTARTED) {
 						// 路由未开启
 						adapter.update(new ArrayList<Route>());
-						tvTips.setText("路由未开启");
+						tvinfo.setText("路由未开启");
 					}
 				}
 			});
@@ -127,60 +145,103 @@ public class MainActivity extends Activity implements OnClickListener {
 			if (!routeRunning) { 
 				// 开启路由 
 				// 1.创建Ad-Hoc网络 
-				adhocRun.constructAdhoc(); 
+				//adhocRun.constructAdhoc(); 
 				// 2.修改节点IP显示
-				handler.postDelayed(new Runnable() {
+
+				tipDialog = new ProgressDialog(this);
+				tipDialog.setTitle("启动路由");
+				tipDialog.setMessage("路由正在启动中");
+				tipDialog.show();
+				
+				((AdhocRouteApp)getApplication()).getGlobalThreadPool().execute(new Runnable() {
+					
 					@Override
 					public void run() {
-						tv_deviceip.setText(generateTips(routeRunning));
+						// 3.将asset里面的文件拷贝到对应位置
+						// 3.1 在app_bin里面创建文件 
+						NativeHelper.setup(MainActivity.this);
+						// 3.2 将asset里面的文件解压到app_bin目录下
+						NativeHelper.unzipAssets(MainActivity.this);
+						// 3.3 更新配置文件，asset里面的配置文件和设置的参数共同决定，更新到package/files/olsrd.conf
+						NativeHelper.updateConfig(MainActivity.this);
+						// 3.使用命令执行路由
+						app.startService();
+						// 4.修改按钮状态
 					}
-				}, 1000);
-
-				// 3.将asset里面的文件拷贝到对应位置
-				// 3.1 在app_bin里面创建文件 
-				NativeHelper.setup(this);
-				// 3.2 将asset里面的文件解压到app_bin目录下
-				NativeHelper.unzipAssets(this);
-				// 3.3 更新配置文件，asset里面的配置文件和设置的参数共同决定，更新到package/files/olsrd.conf
-				NativeHelper.updateConfig(this);
+				});
 				
-				routeRunning = true; 
-				
-				// 3.使用命令执行路由
-				app.startService();
-				// 4.修改按钮状态
-				olsrd_switch.setImageResource(R.drawable.power_on_icon);
-				
-				timer.schedule(new RefreshTimeTask(), 1000, 3000);
-				Lg.d("adhocroute-test 执行完了startservice");
 			} else {
 				// 关闭路由 
-				app.stopService(); 
+				app.stopService();
 				routeRunning = false;
 				olsrd_switch.setImageResource(R.drawable.power_off_icon);
-				tv_deviceip.setText(generateTips(routeRunning));
 			}
 		}
 	}
+
+	private void registerDialogBroadcastReceiver() {
+		IntentFilter filter = new IntentFilter();  
+        filter.addAction(ACTION_DIALOG_HIDE_BROADCASTRECEIVER);  
+        registerReceiver(dialogShowHideReceiver, filter);  
+	}
+	
+	private void unregisterDialogBroadcastReceiver() {
+        unregisterReceiver(dialogShowHideReceiver);
+	}
+	
+	private BroadcastReceiver dialogShowHideReceiver = new BroadcastReceiver(){  
+		  
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+        	if (action.equals(ACTION_DIALOG_SHOW_BROADCASTRECEIVER)){
+        		// Omitted
+        	} else if (action.equals(ACTION_DIALOG_HIDE_BROADCASTRECEIVER)) {
+        		boolean isStarted = intent.getBooleanExtra("isStarted", false);
+        		if (tipDialog != null) {
+        			tipDialog.dismiss();
+        		}
+        		if (isStarted) {
+        			Toast.makeText(MainActivity.this, "路由启动成功", Toast.LENGTH_LONG).show();
+        			routeRunning = true; 
+        			olsrd_switch.setImageResource(R.drawable.power_on_icon);
+        		} else {
+        			Toast.makeText(MainActivity.this, "路由启动异常，请重新启动", Toast.LENGTH_LONG).show();
+        			routeRunning = false;
+        			olsrd_switch.setImageResource(R.drawable.power_off_icon);
+        		}
+        	}
+        }
+    };
 
 	@Override
 	protected void onDestroy() {
 		timer.cancel();
+		unregisterDialogBroadcastReceiver();
 		super.onDestroy();
 	}
 
-	private String generateTips(boolean routeRunning) {
-		String result = "";
-		if (routeRunning) {
-			String localIP = IPUtils.getAdhocIpString();
-			if (localIP != null) {
-				result = "节点" + localIP + "的路由表";
-			} else {
-				result="程序异常";
-			}
-		} else {
-			result = "未开启Ad-hoc路由";
+	private void stopProcess() {
+		try {
+			Process process = Runtime.getRuntime().exec("su");
+			OutputStream os = process.getOutputStream();
+			os.write(RouteServices.PS.getBytes());
+			os.close();
+			BufferedReader br = new BufferedReader(new java.io.InputStreamReader(process.getInputStream()));
+			String line = br.readLine();
+            while(line != null){
+                if (line.contains(RouteServices.CMD_OLSR)) {
+					String pidStr = line.split("\\s+")[1];
+					int pid = Integer.valueOf(pidStr);
+					((AdhocRouteApp)getApplication()).getGlobalThreadPool().execute(new KillOlsrRunnable(pid));
+				}
+                line = br.readLine();
+            }
+			process.waitFor();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		return result;
 	}
+	
+	
 }

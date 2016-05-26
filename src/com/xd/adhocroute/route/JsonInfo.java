@@ -28,7 +28,6 @@ import com.xd.adhocroute.data.Node;
 import com.xd.adhocroute.data.OlsrDataDump;
 import com.xd.adhocroute.data.Plugin;
 import com.xd.adhocroute.data.Route;
-import com.xd.adhocroute.log.Lg;
 
 public class JsonInfo {
 
@@ -78,7 +77,6 @@ public class JsonInfo {
 			lastCommand = cmdString;
 			for (String s : cmdString.split("/")) {
 				if ( !s.equals("") && !supportedCommands.contains(s)) {
-					Lg.d("Unsupported command: " + s);
 					isValid = false;
 				}
 			}
@@ -113,7 +111,6 @@ public class JsonInfo {
 		out.close();
 		in.close();
 		sock.close();
-
 		return retlist.toArray(new String[retlist.size()]);
 	}
 	public String command(String cmdString) {
@@ -138,6 +135,7 @@ public class JsonInfo {
 		if (mapper == null)
 			mapper = new ObjectMapper();
 		OlsrDataDump ret = new OlsrDataDump();
+		
 		try {
 			String dump = command(cmd);
 			if (! dump.contentEquals(""))
@@ -174,7 +172,6 @@ public class JsonInfo {
 			ret.routes = Collections.emptyList();
 		return ret;
 	}
-
 	public OlsrDataDump all() {
 		return parseCommand("/all");
 	}
@@ -224,32 +221,5 @@ public class JsonInfo {
 	public static void main(String[] args) throws IOException {
 		JsonInfo jsoninfo = new JsonInfo();
 		OlsrDataDump dump = jsoninfo.all();
-		Lg.d("gateways:");
-		for (Gateway g : dump.gateways)
-			Lg.d("\t" + g.ipAddress);
-		Lg.d("hna:");
-		for (HNA h : dump.hna)
-			Lg.d("\t" + h.destination);
-		Lg.d("Interfaces:");
-		for (Interface i : dump.interfaces)
-			Lg.d("\t" + i.name);
-		Lg.d("Links:");
-		for (Link l : dump.links)
-			Lg.d("\t" + l.localIP + " <--> " + l.remoteIP);
-		Lg.d("MID:");
-		for (MID m : dump.mid)
-			Lg.d("\t" + m.ipAddress);
-		Lg.d("Neighbors:");
-		for (Neighbor n : dump.neighbors)
-			Lg.d("\t" + n.ipv4Address);
-		Lg.d("Plugins:");
-		for (Plugin p : dump.plugins)
-			Lg.d("\t" + p.plugin);
-		Lg.d("Routes:");
-		for (Route r : dump.routes)
-			Lg.d("\t" + r.destination);
-		Lg.d("Topology:");
-		for (Node node : dump.topology)
-			Lg.d("\t" + node.destinationIP);
 	}
 }

@@ -8,18 +8,17 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Handler;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.xd.adhocroute.AdhocRouteApp;
-import com.xd.adhocroute.log.Lg;
+import com.xd.adhocroute.MainActivity;
 import com.xd.adhocroute.utils.ShellUtils;
 
 public class RouteServices extends Service {
-	private static final String PS = "ps";
-	private static final String OLSR_KILL = "kill -9 ";
+	public static final String PS = "ps";
+	public static final String OLSR_KILL = "kill ";
 	public static final String CMD_OLSR = "app_bin/olsrd";
 	public static final String DNS = "su setprop net.dns1 8.8.8.8";
 	
@@ -47,8 +46,8 @@ public class RouteServices extends Service {
 		olsrdPath = new File(getDir("bin", Context.MODE_PRIVATE), "olsrd").getAbsolutePath();
 		olsrdConfPath = new File(getFilesDir(), "olsrd.conf").getAbsolutePath();
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-		String inface = sp.getString("interface", "");
-		OLSR_START = olsrdPath + " -f " + olsrdConfPath + " -d 0" + " -i " + inface;
+		String inface = sp.getString("interface", "wlan0");
+		OLSR_START = olsrdPath + " -f " +  olsrdConfPath + " -d 0" + " -i " + inface;
 	}
 	
 	@Override
@@ -62,8 +61,22 @@ public class RouteServices extends Service {
 		app.serviceDestroy();
 		super.onDestroy();
 	}
+	
 	private void startProcess() {
-		ShellUtils.safeStartOlsrd(OLSR_START);
+		((AdhocRouteApp)getApplication()).getGlobalThreadPool().execute(new Runnable() {
+			@Override
+			public void run() {
+				Intent intent = new Intent(MainActivity.ACTION_DIALOG_HIDE_BROADCASTRECEIVER);
+				System.out.println("------------------" + OLSR_START);
+				if (ShellUtils.safeStartOlsrd(OLSR_START)) {
+					intent.putExtra("isStarted", true);
+				} else {
+					intent.putExtra("isStarted", false);
+				}
+				sendBroadcast(intent);
+			}
+		});
+		
 	}
 	
 	private void stopProcess() {
@@ -90,7 +103,6 @@ public class RouteServices extends Service {
 
 	public void startOLSR() {
 		startProcess();
-		Lg.d("adhocroute-test 执行完了startProcess");
 	}
 	
 	public void stopOLSR() {
@@ -104,7 +116,7 @@ public class RouteServices extends Service {
 		return null;
 	}
 	
-	private class KillOlsrRunnable implements Runnable {
+	public static class KillOlsrRunnable implements Runnable {
 		
 		private final int pid;
 		

@@ -3,7 +3,6 @@ package com.xd.adhocroute.utils;
 import java.io.BufferedReader;
 import java.io.OutputStream;
 
-import com.xd.adhocroute.log.Lg;
 import com.xd.adhocroute.route.RouteServices;
 
 public class ShellUtils {
@@ -15,7 +14,7 @@ public class ShellUtils {
     	exec(olsrdKillCMD);
     	int i = 0;
     	
-    	while (i < 5 && !checkOlsrStoped()/*检查是否已经启动了这个进程*/) {
+    	while (i < 5 && !checkOlsrStoped()/*检查是否已经kill了这个进程*/) {
     		try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
@@ -28,20 +27,14 @@ public class ShellUtils {
     	}
 	}
 	
-	
-	
-	
 	private static boolean checkOlsrStoped() {
 		return true;
 	}
 
-
-
-
-	public static void safeStartOlsrd(String olsrdStartCMD) {
+	public static boolean safeStartOlsrd(String olsrdStartCMD) {
     	exec(olsrdStartCMD);
     	int i = 0;
-    	while (i < 5 && !checkOlsrStarted()/*检查是否已经启动了这个进程*/) {
+    	while (i < 10 && !checkOlsrStarted()/*检查是否已经启动了这个进程*/) {
     		try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
@@ -50,10 +43,11 @@ public class ShellUtils {
     		exec(olsrdStartCMD);
     		i++;
     	}
-    	if(5 == i) {
-    		// 10次都没有启动成功
-    		// 提示用户
-    		//:TODO
+    	if(10 <= i) {
+    		// 10次都没有启动成功 提示用户
+    		return false;
+    	} else {
+    		return true;
     	}
 	}
 	
@@ -80,7 +74,6 @@ public class ShellUtils {
 	}
 	
     public static boolean exec(String cmd) {
-    	Lg.d("adhocroute-test 开始执行exec");
     	Process process;
 		try {
 			process = Runtime.getRuntime().exec(COMMAND_SU);
@@ -89,14 +82,11 @@ public class ShellUtils {
 			os.flush();
 			os.close();
 			process.waitFor();
-			Lg.d("adhocroute-test 执行exec正常");
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
-			Lg.d("adhocroute-test 执行exec异常");
 			return false;
 		}
-		
 	}
     
     // 判断是否root

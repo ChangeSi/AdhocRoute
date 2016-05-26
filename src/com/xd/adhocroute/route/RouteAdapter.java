@@ -27,6 +27,7 @@ public class RouteAdapter extends BaseAdapter{
 		this.routeTables = routeTables;
 		notifyDataSetChanged();
 	}
+	
 	@Override
 	public int getCount() {
 		return routeTables.size();

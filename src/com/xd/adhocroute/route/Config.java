@@ -14,7 +14,10 @@ import java.util.Map;
 import java.util.Vector;
 
 public class Config {
+	// 基本配置
 	private String mBaseConfiguration;
+	
+	// 额外增加的
 	private Vector<Config.ConfigInfo> vInfos;
 	
 	public Config(String baseConfiguration) throws IOException, FileNotFoundException {
@@ -119,6 +122,10 @@ public class Config {
 			for (Map.Entry<String, String> e : mKvs.entrySet()) {
 				builder.append("\tPlParam \"" + e.getKey() + "\" \"" + e.getValue() + "\"\n");
 			}
+			
+			/***************************test**************************/
+			//builder.append("\tPlParam \"" + "ping" + "\" \"" + "180.97.33.108" + "\"\n");
+			/***************************test**************************/
 			builder.append("}\n");
 			return new String(builder);
 		}

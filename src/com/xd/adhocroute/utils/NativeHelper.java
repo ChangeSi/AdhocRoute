@@ -20,24 +20,22 @@ import com.xd.adhocroute.route.Config;
 
 public class NativeHelper {
 	public static final String TAG = "NativeHelper";
-
 	public static File publicFiles;
 	public static File profileDir;
 	public static File app_bin;
 	public static File app_log;
 	public static File shared_prefs;
-
 	private static String OLSRD_HTTP;
 	private static String OLSRD;
 	private static String OLSRD_DYN_GW;
 	private static String OLSRD_CONF;
 
-
+	// 
 	public static void setup(Context context) {
 		app_bin = context.getDir("bin", Context.MODE_PRIVATE).getAbsoluteFile();
 		OLSRD = new File(app_bin, "olsrd").getAbsolutePath();
-		OLSRD_HTTP = new File(app_bin, "olsrd_dyn_gw_plain.so.0.4").getAbsolutePath();
-		OLSRD_DYN_GW = new File(app_bin, "olsrd_httpinfo.so.0.1").getAbsolutePath();
+		OLSRD_HTTP = new File(app_bin, "olsrd_jsoninfo.so.0.0").getAbsolutePath();
+		OLSRD_DYN_GW = new File(app_bin, "olsrd_dyn_gw_plain.so.0.4").getAbsolutePath();
 		OLSRD_CONF = new File(app_bin, "olsrd.conf").getAbsolutePath();
 	}
 
@@ -74,6 +72,7 @@ public class NativeHelper {
 			Log.e(AdhocRouteApp.TAG, "Can't unzip", e);
 		}
 		chmod("0777", new File(OLSRD));
+		
 		return result;
 	}
 
@@ -103,7 +102,7 @@ public class NativeHelper {
 	public static void updateConfig(Context context) {
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
 		String wan_info = sp.getString("wan", "");
-		boolean open_gateway_info = sp.getBoolean("open_gateway", false);
+		boolean open_gateway_info = sp.getBoolean("dynamic_check_gateway", false);
 		
 		String baseConfig = NativeHelper.app_bin.getAbsolutePath() + "/olsrd.conf";
 		String dyngatewayPath = NativeHelper.app_bin.getAbsolutePath() + "/olsrd_dyn_gw_plain.so.0.4";
@@ -117,11 +116,11 @@ public class NativeHelper {
 			if (open_gateway_info) {
 				config.addConfigInfo(new Config.PluginConfigInfo(dyngatewayPath));
 			}
-			// 
+			// 到目前为止 已经把所有的配置信息转化为对影成这个类Config
 			FileOutputStream olsrdConf = context.openFileOutput("olsrd.conf", 0);
 			config.write(olsrdConf);
 			olsrdConf.close();
-			
+
 		} catch (FileNotFoundException e) {
 			Log.i(AdhocRouteApp.TAG, "baseConfig file not found");
 			e.printStackTrace();

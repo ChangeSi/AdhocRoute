@@ -6,8 +6,6 @@ import java.util.concurrent.Executors;
 import android.app.Application;
 import android.content.Intent;
 
-import com.xd.adhocroute.log.Lg;
-import com.xd.adhocroute.log.WriteLogger;
 import com.xd.adhocroute.route.RouteServices;
 
 public class AdhocRouteApp extends Application {
@@ -22,12 +20,13 @@ public class AdhocRouteApp extends Application {
 	public void onCreate() {
 		super.onCreate();
 		executorService = Executors.newFixedThreadPool(2);
-		initLogger();
 	}
-	private void initLogger() {
-		Lg.setLogger(WriteLogger.getInstance(getApplicationContext()));
-		Lg.setDebug(true);
-	}
+	
+//	private void initLogger() {
+//		Lg.setLogger(WriteLogger.getInstance(getApplicationContext()));
+//		Lg.setDebug(true);
+//	}
+	
 	public void serviceStarted(RouteServices s) {
 		service = s;
 		service.startOLSR();

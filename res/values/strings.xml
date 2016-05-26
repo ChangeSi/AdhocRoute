@@ -3,7 +3,8 @@
 
     <string name="app_name">AdhocRoute</string>
     <string name="hello_world">Hello world!</string>
-    <string name="action_settings">参数设置</string>
+    <string name="net_settings">网络设置</string>
+    <string name="route_settings">路由设置</string>
 
 <!--     <string-array name="channel_values"> -->
 <!--         <item>1</item> -->

@@ -65,9 +65,9 @@ public class IPUtils {
 			return IpPattern.matcher(address).matches();
 	}
 
-	public static byte getAdhocLastIpByte() {
-		return TransUtils.int2Byte(getAdhocLastIpInt());
-	}
+//	public static byte getAdhocLastIpByte() {
+//		return TransUtils.int2Byte(getAdhocLastIpInt());
+//	}
 	
 	public static int getAdhocLastIpInt(){
 		String lastIp = getAdhocLastIpString();

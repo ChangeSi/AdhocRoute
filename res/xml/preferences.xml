@@ -2,39 +2,40 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     android:title="设置" >
 
-    <PreferenceCategory android:title="网络设置" >
-        <EditTextPreference
-            android:key="ssid"
-            android:singleLine="true"
-            android:title="SSID"
-            android:defaultValue="Android-Ad-Hoc"
-             />
-        <ListPreference
-            android:key="lan_channel"
-            android:title="channel" />
+<!--     <PreferenceCategory android:title="网络设置" > -->
+<!--         <EditTextPreference -->
+<!--             android:key="ssid" -->
+<!--             android:singleLine="true" -->
+<!--             android:title="SSID" -->
+<!--             android:defaultValue="Android-Ad-Hoc" -->
+<!--              /> -->
+<!--         <ListPreference -->
+<!--             android:key="lan_channel" -->
+<!--             android:title="channel" /> -->
         
-        <com.xd.adhocroute.route.IPPreference
-            android:key="adhoc_ip"
-            android:singleLine="true"
-            android:title="Node IP" />
-		<com.xd.adhocroute.route.IPPreference
-            android:key="adhoc_mask"
-            android:singleLine="true"
-            android:title="Adhoc Mask"
-            android:defaultValue="255.255.255.0" />
-		<EditTextPreference
-            android:key="adhoc_dns"
-            android:singleLine="true"
-            android:title="Adhoc DNS"
-            android:defaultValue="8.8.8.8" />
+<!--         <com.xd.adhocroute.route.IPPreference -->
+<!--             android:key="adhoc_ip" -->
+<!--             android:singleLine="true" -->
+<!--             android:title="Node IP" /> -->
+<!-- 		<com.xd.adhocroute.route.IPPreference -->
+<!--             android:key="adhoc_mask" -->
+<!--             android:singleLine="true" -->
+<!--             android:title="Adhoc Mask" -->
+<!--             android:defaultValue="255.255.255.0" /> -->
+<!-- 		<EditTextPreference -->
+<!--             android:key="adhoc_dns" -->
+<!--             android:singleLine="true" -->
+<!--             android:title="Adhoc DNS" -->
+<!--             android:defaultValue="8.8.8.8" /> -->
 		
-    </PreferenceCategory>
+<!--     </PreferenceCategory> -->
 
     <PreferenceCategory android:title="路由设置" >
         <com.xd.adhocroute.route.IPMaskPreference
             android:key="wan"
             android:singleLine="true"
             android:hint="网络和掩码用空格隔开"
+            android:defaultValue=""
             android:title="外网" />
         <EditTextPreference
             android:key="interface"
@@ -42,26 +43,27 @@
             android:title="网卡"
             android:defaultValue="wlan0" />
         <CheckBoxPreference
-            android:key="open_gateway"
-            android:singleLine="true"
-            android:title="开启网关功能" />
+            android:key="dynamic_check_gateway"
+            android:defaultValue="false"
+            android:title="开启动态网关功能" />
     </PreferenceCategory>
     
     <PreferenceCategory android:title="NAT设置" >
         <CheckBoxPreference
-            android:key="open_gateway"
-            android:singleLine="true"
+            android:key="open_nat"
+            android:defaultValue="true"
             android:title="开启NAT功能" />
         <EditTextPreference
             android:key="natnet"
             android:singleLine="true"
             android:hint="如192.168.2.0/24"
+            android:defaultValue="true"
             android:title="子网号" />
         <EditTextPreference
             android:key="natip"
             android:singleLine="true"
             android:title="映射ip"
-            android:defaultValue="wlan0" />
+            android:defaultValue="" />
     </PreferenceCategory>
 
 </PreferenceScreen>
