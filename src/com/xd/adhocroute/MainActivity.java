@@ -1,5 +1,6 @@
 package com.xd.adhocroute;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -12,6 +13,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,11 +30,13 @@ import com.xd.adhocroute.route.RouteAdapter;
 import com.xd.adhocroute.route.RouteRefresh;
 import com.xd.adhocroute.route.RouteRefresh.Callback;
 import com.xd.adhocroute.route.RouteServices;
-import com.xd.adhocroute.utils.NativeHelper;
+import com.xd.adhocroute.utils.ConfigHelper;
+
 public class MainActivity extends Activity implements OnClickListener {
 
-	public static final String ACTION_DIALOG_SHOW_BROADCASTRECEIVER = "action.dialog.show";
-	public static final String ACTION_DIALOG_HIDE_BROADCASTRECEIVER = "action.dialog.hide";
+	public static final String ACTION_DIALOG_SHOW_BROADCASTRECEIVER = "action.dialog.startroute.show";
+	public static final String ACTION_DIALOG_HIDE_BROADCASTRECEIVER = "action.dialog.startroute.hide";
+	public static final int INTERFACE_NOT_EXIST = 0x01;
 	public static boolean routeRunning;
 	private ImageButton olsrd_switch;
 //	private AdhocRun adhocRun;
@@ -40,10 +44,31 @@ public class MainActivity extends Activity implements OnClickListener {
 	private AdhocRouteApp app;
 	private ListView lvRoute;
 	private Timer timer;
-	private RouteRefresh routeRefresh;
 	private TextView tvinfo;
 	private RouteAdapter adapter;
 	private ProgressDialog tipDialog;
+	
+	private Handler handler = new UIHandler(this);
+	
+	private static class UIHandler extends Handler{
+		WeakReference<MainActivity> outerReference;
+		
+		public UIHandler(MainActivity outer) {
+			outerReference = new WeakReference<MainActivity>(outer);;
+		}
+		public void handleMessage(android.os.Message msg) {
+			MainActivity mainActivity = outerReference.get();
+			if (mainActivity == null) return;
+			switch (msg.what) {
+			case INTERFACE_NOT_EXIST:
+				Toast.makeText(mainActivity, "指定的网卡不存在", Toast.LENGTH_LONG).show();
+				break;
+			default:
+				break;
+			}
+		}
+	}
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -51,7 +76,6 @@ public class MainActivity extends Activity implements OnClickListener {
 		setContentView(R.layout.activity_main);
 //		adhocRun = new AdhocRun(this);
 //		adhocRun.startScanThread();
-		routeRefresh = new RouteRefresh();
 		registerDialogBroadcastReceiver();
 		initUI();
 		setSwitchState();
@@ -83,7 +107,7 @@ public class MainActivity extends Activity implements OnClickListener {
 	private class RefreshTimeTask extends TimerTask {
 		@Override
 		public void run() {
-			routeRefresh.refreshRoute(new Callback() {
+			app.routeRefresh.refreshRoute(new Callback() {
 				@Override
 				public void onSuccess(OlsrDataDump olsrDataDump) {
 					List<Interface> interfaces = (List<Interface>)olsrDataDump.interfaces;
@@ -130,17 +154,18 @@ public class MainActivity extends Activity implements OnClickListener {
 	public void onClick(View v) {
 		if (v.getId() == R.id.ib_olsrd) {
 			if (!routeRunning) { 
-				tipDialog = new ProgressDialog(this);
-				tipDialog.setTitle("启动路由");
-				tipDialog.setMessage("路由正在启动中");
-				tipDialog.setCanceledOnTouchOutside(false);
-				tipDialog.setCancelable(false);
-				tipDialog.show();
+				showDialog();
 				app.getGlobalThreadPool().execute(new Runnable() {
 					@Override
 					public void run() {
-						NativeHelper.configAPP(MainActivity.this);
-						app.startService();
+						if (!ConfigHelper.configAPP(MainActivity.this)) {
+							handler.sendEmptyMessage(INTERFACE_NOT_EXIST);
+							// 关闭进度条
+							tipDialog.dismiss();
+							routeRunning = false;
+						} else {
+							app.startService();
+						}
 					}
 				});
  			} else {
@@ -150,6 +175,15 @@ public class MainActivity extends Activity implements OnClickListener {
 				olsrd_switch.setImageResource(R.drawable.power_off_icon);
 			}
 		}
+	}
+
+	private void showDialog() {
+		tipDialog = new ProgressDialog(this);
+		tipDialog.setTitle("启动路由");
+		tipDialog.setMessage("路由正在启动中");
+		tipDialog.setCanceledOnTouchOutside(false);
+		tipDialog.setCancelable(false);
+		tipDialog.show();
 	}
 
 	private void registerDialogBroadcastReceiver() {

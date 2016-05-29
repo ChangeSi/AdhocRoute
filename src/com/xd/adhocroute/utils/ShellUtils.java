@@ -5,6 +5,12 @@ import java.io.OutputStream;
 
 import com.xd.adhocroute.route.RouteServices;
 
+/**
+ * 使用Java代码执行命令行程序
+ * @author qhyuan1992
+ * @see com.xd.adhocroute.nativehelper.CoreTask
+ * @see com.xd.adhocroute.nativehelper.NativeTask
+ */
 @Deprecated
 public class ShellUtils {
     private static final String CHECK_ROOT = "cd /data/data";

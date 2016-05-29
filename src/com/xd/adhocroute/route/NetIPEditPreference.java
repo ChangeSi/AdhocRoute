@@ -7,28 +7,29 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
-
-public class IPMaskPreference extends EditTextPreference {
-	public IPMaskPreference(Context context, AttributeSet attrs, int defStyle) { super(context, attrs, defStyle); }
-	public IPMaskPreference(Context context, AttributeSet attrs) { super(context, attrs); }
-	public IPMaskPreference(Context context) { super(context); }
+/**
+ * 支持判断是否是合法的用斜杠和数字表示的子网号
+ * @author qhyuan1992
+ *
+ */
+public class NetIPEditPreference extends EditTextPreference {
+	public NetIPEditPreference(Context context, AttributeSet attrs, int defStyle) { super(context, attrs, defStyle); }
+	public NetIPEditPreference(Context context, AttributeSet attrs) { super(context, attrs); }
+	public NetIPEditPreference(Context context) { super(context); }
 
 	@Override
 	protected void onAddEditTextToDialogView(View dialogView, EditText editText) {
-		editText.setKeyListener(DigitsKeyListener.getInstance(" 0123456789."));
+		editText.setKeyListener(DigitsKeyListener.getInstance("0123456789./"));
 		super.onAddEditTextToDialogView(dialogView, editText);
 	}
-	public boolean ipCheck(String text) {
+	public boolean netIPCheck(String text) {
+		if (text.isEmpty()) return true;
         if (text != null && !text.isEmpty()) {
             String regex = "^(1\\d{2}|2[0-4]\\d|25[0-5]|[1-9]\\d|[1-9])\\."
                     + "(1\\d{2}|2[0-4]\\d|25[0-5]|[1-9]\\d|\\d)\\."
                     + "(1\\d{2}|2[0-4]\\d|25[0-5]|[1-9]\\d|\\d)\\."
                     + "(1\\d{2}|2[0-4]\\d|25[0-5]|[1-9]\\d|\\d)"
-                    + " "
-                    + "(1\\d{2}|2[0-4]\\d|25[0-5]|[1-9]\\d|\\d)\\."
-                    + "(1\\d{2}|2[0-4]\\d|25[0-5]|[1-9]\\d|\\d)\\."
-                    + "(1\\d{2}|2[0-4]\\d|25[0-5]|[1-9]\\d|\\d)\\."
-            		+ "(1\\d{2}|2[0-4]\\d|25[0-5]|[1-9]\\d|\\d)$";
+                    + "/\\d+$";
             if (text.matches(regex)) {
                 return true;
             } else {
@@ -38,15 +39,14 @@ public class IPMaskPreference extends EditTextPreference {
         return false;
     }
 	public  boolean validate(String addr) {
-		return ipCheck(addr);
+		return netIPCheck(addr);
 	}
 
 	@Override
 	protected void onDialogClosed(boolean positiveResult) {
 		if (positiveResult) {
-			// verify now that it's an IP
 			String addr = getEditText().getText().toString();
-			if (!addr.equals("") && !validate(addr) && !addr.equals("0.0.0.0 0.0.0.0")) {
+			if (!validate(addr)) {
 				Toast.makeText(getContext(), "格式不正确", Toast.LENGTH_LONG).show();
 				positiveResult = false;
 			}
@@ -54,4 +54,3 @@ public class IPMaskPreference extends EditTextPreference {
 		super.onDialogClosed(positiveResult);
 	}
 }
-

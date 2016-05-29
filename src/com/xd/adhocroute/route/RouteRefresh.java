@@ -8,14 +8,20 @@ import android.os.Handler;
 
 import com.xd.adhocroute.data.OlsrDataDump;
 
+/**
+ * 封装了获取路由相关信息的方法，通过回调接口更新数据
+ * @author qhyuan1992
+ *
+ */
 public class RouteRefresh {
 	protected static final int REFRESH_SUCCESS = 0X01;
-	protected static final int REFRESH_FAILED = 0X02;
 	public static final int REFRESH_UNSTARTED = 0x03;
 	private Callback refreshListener;
 	private ExecutorService exec = Executors.newSingleThreadExecutor();
+	
 	private Handler handler = new MyHandler(this);
-	private static class MyHandler extends Handler{
+	
+	public static class MyHandler extends Handler{
 		WeakReference<RouteRefresh> outerReference;
 		
 		public MyHandler(RouteRefresh outer) {

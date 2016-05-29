@@ -7,14 +7,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import com.xd.adhocroute.R;
-import com.xd.adhocroute.R.id;
-import com.xd.adhocroute.R.layout;
 import com.xd.adhocroute.data.Route;
-
 public class RouteAdapter extends BaseAdapter{
 
 	public Context context;

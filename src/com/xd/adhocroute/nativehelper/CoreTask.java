@@ -11,9 +11,16 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 
 import android.util.Log;
 
+/**
+ * 对NativeTask的进一步封装<br>
+ * 封装了与设备已经执行进程相关的一些函数
+ * @author qhyuan1992
+ *
+ */
 public class CoreTask {
 	public static final String TAG = "AdhocRoute -> CoreTask";
 	// <进程文件绝对路径，启动进程命令>
@@ -48,12 +55,18 @@ public class CoreTask {
     	return false;
     }
 
+    public static void setDns(String dns) {
+    	CoreTask.runRootCommand("setprop net.dns1 " + dns);
+    }
     // 启动进程
     public static boolean startProcess (String proc) {
     	return runRootCommand(proc);
     }
 
-    // 有问题
+    /*
+     * 好像有问题
+     */
+    @Deprecated
     public static boolean killProcessNative(String procName) {
 		int returncode = NativeTask.killProcess(2, procName);
 		if (returncode == 0) {
@@ -64,21 +77,22 @@ public class CoreTask {
 
     public boolean killProcess(String processName) {
     	boolean killSuccess = false;
-    	String targetID = "";
+    	List<String> targetIDList = new ArrayList<String>();
 		for (String procFilePath : runningProcesses.keySet()) {
 			String procStartCmd = runningProcesses.get(procFilePath);
 			if (procStartCmd.contains(processName)) {
-				targetID = procFilePath.substring(procFilePath.lastIndexOf("/") + 1);
-				if (killProcessByPid(targetID)) {
-					killSuccess = true;
-				}
+				String targetID = procFilePath.substring(procFilePath.lastIndexOf("/") + 1);
+				targetIDList.add(targetID);
 			}
 		}
-		if (killSuccess) {
-			runningProcesses.remove(targetID);
-			return true;
+		
+		for (String targetID : targetIDList) {
+			if (killProcessByPid(targetID)) {
+				killSuccess = true;
+				runningProcesses.remove(targetID);
+			}
 		}
-		return false;
+		return killSuccess;
     }
 
     public boolean killProcessByPid(String procID) {
@@ -172,7 +186,6 @@ public class CoreTask {
     public void addNat() {
     	setNat(true);
     }
-    
     public void delNat() {
     	setNat(false);
     }

@@ -7,23 +7,25 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
-
-public class IPPreference extends EditTextPreference {
-	public IPPreference(Context context, AttributeSet attrs, int defStyle) { super(context, attrs, defStyle); }
-	public IPPreference(Context context, AttributeSet attrs) { super(context, attrs); }
-	public IPPreference(Context context) { super(context); }
+/**
+ * 支持判断是否是float类型
+ * @author qhyuan1992
+ *
+ */
+public class FloatEditPreference extends EditTextPreference {
+	public FloatEditPreference(Context context, AttributeSet attrs, int defStyle) { super(context, attrs, defStyle); }
+	public FloatEditPreference(Context context, AttributeSet attrs) { super(context, attrs); }
+	public FloatEditPreference(Context context) { super(context); }
 
 	@Override
 	protected void onAddEditTextToDialogView(View dialogView, EditText editText) {
 		editText.setKeyListener(DigitsKeyListener.getInstance("0123456789."));
 		super.onAddEditTextToDialogView(dialogView, editText);
 	}
-	public boolean ipCheck(String text) {
+	public boolean floatCheck(String text) {
+		if (text.isEmpty()) return true;
         if (text != null && !text.isEmpty()) {
-            String regex = "^(1\\d{2}|2[0-4]\\d|25[0-5]|[1-9]\\d|[1-9])\\."
-                    + "(1\\d{2}|2[0-4]\\d|25[0-5]|[1-9]\\d|\\d)\\."
-                    + "(1\\d{2}|2[0-4]\\d|25[0-5]|[1-9]\\d|\\d)\\."
-                    + "(1\\d{2}|2[0-4]\\d|25[0-5]|[1-9]\\d|\\d)$";
+            String regex = "^[-\\+]?[.\\d]*$";
             if (text.matches(regex)) {
                 return true;
             } else {
@@ -33,7 +35,7 @@ public class IPPreference extends EditTextPreference {
         return false;
     }
 	public  boolean validate(String addr) {
-		return ipCheck(addr);
+		return floatCheck(addr);
 	}
 
 	@Override

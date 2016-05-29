@@ -5,16 +5,12 @@ import java.io.File;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.IBinder;
-import android.preference.PreferenceManager;
 
 import com.xd.adhocroute.AdhocRouteApp;
 
 public class RouteServices extends Service {
 	public static final String CMD_OLSR = "app_bin/olsrd";
-	public static final String DNS = "su setprop net.dns1 8.8.8.8";
-	
 	private String olsrdPath;
 	private String olsrdConfPath;
 	private String OLSR_START = "";
@@ -28,9 +24,6 @@ public class RouteServices extends Service {
 	public final static int STATE_ROUTE_FAILED = 3;
 	public final static int STATE_ROUTE_RUNNING = 4;
 	
-    final static int MSG_OUTPUT     = 1;
-    final static int MSG_ERROR      = 2;
-    final static int MSG_PID      = 3;
 	
 	@Override
 	public void onCreate() {
@@ -38,9 +31,7 @@ public class RouteServices extends Service {
 		app = (AdhocRouteApp)getApplication();
 		olsrdPath = new File(getDir("bin", Context.MODE_PRIVATE), "olsrd").getAbsolutePath();
 		olsrdConfPath = new File(getFilesDir(), "olsrd.conf").getAbsolutePath();
-		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-		String inface = sp.getString("interface", "wlan0");
-		OLSR_START = olsrdPath + " -f " +  olsrdConfPath + " -i " + inface;
+		OLSR_START = olsrdPath + " -f " +  olsrdConfPath; /* + " -i " + inface*/
 	}
 	
 	@Override

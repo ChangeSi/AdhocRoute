@@ -14,6 +14,12 @@ import android.widget.Toast;
 
 import com.xd.adhocroute.AdhocRouteApp;
 
+/**
+ * 用来创建Adhoc网络
+ * @author qhyuan1992
+ *
+ */
+@Deprecated
 public class AdhocRun {
 	private Thread mScanTread;
 	private Context context;
