@@ -1,4 +1,6 @@
 *.apk
-
+*.so
 *.class
 bin
+obj
+gen
