@@ -63,11 +63,36 @@ public class AdhocRouteApp extends Application {
 		});
 	}
 	
-	private void setNAT() {
-		coretask.delAllNat();
-		// 
-		
+private void setNAT() {
 		// 设置NAT
+		if (preferenceUtils.getBoolean("open_nat", false)) {
+			// 先查看是否文件里是不是“1”，不是1设置成1
+			if (!coretask.isNatEnabled()) {
+				coretask.setNatEnabled();
+			}
+			String natsubnet = preferenceUtils.getString("natsubnet", "");
+			String natip = preferenceUtils.getString("natip", "");
+			String natinterface = preferenceUtils.getString("natinterface", "");
+			// 加之前先把有的删了，有问题，可能把不该删的删了
+			if ((!natsubnet.equals("")) && (!natip.equals(""))) {
+				coretask.delAllNat();
+				coretask.addNatWithSrcAndIP(natsubnet, natip);
+			} else if ((!natsubnet.equals("")) && (!natinterface.equals(""))) {
+				coretask.delAllNat();
+				coretask.addNatWithSrcAndInterface(natsubnet, natinterface);
+			} else if (!natsubnet.equals("")) {
+				coretask.delAllNat();
+				coretask.addNatWithSrc(natsubnet);
+			} else if (!natinterface.equals("")) {
+				coretask.delAllNat();
+				coretask.addNatWithInterface(natinterface);
+			} else {
+				coretask.delAllNat();
+				coretask.addNat();
+			}
+		} else {
+			coretask.delAllNat();
+		}
 	}
 	
 	private void setDNS() {
