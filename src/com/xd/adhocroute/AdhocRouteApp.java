@@ -10,7 +10,7 @@ import com.xd.adhocroute.nativehelper.CoreTask;
 import com.xd.adhocroute.route.RouteRefresh;
 import com.xd.adhocroute.route.RouteServices;
 import com.xd.adhocroute.utils.PreferenceUtils;
-
+//123456
 public class AdhocRouteApp extends Application {
 	public static String TAG = "AdhocRoute -> AdhocRouteApp";
 	public RouteServices service = null;
