@@ -49,14 +49,20 @@ public class CoreTask {
     		return false;
     	for (String line : readLinesFromFile("/proc/net/dev")) {
     		if (line.startsWith(device)) {
-    			return true;
+    			if(line.substring(0, line.indexOf(":")).trim().equals(device)) {
+    				return true;
+    			}
     		}
     	}
     	return false;
     }
 
-    public static void setDns(String dns) {
+    public static void setFirstDns(String dns) {
     	CoreTask.runRootCommand("setprop net.dns1 " + dns);
+    }
+    
+    public static void setSecondDns(String dns) {
+    	CoreTask.runRootCommand("setprop net.dns2 " + dns);
     }
     // 启动进程
     public static boolean startProcess (String proc) {
@@ -75,6 +81,7 @@ public class CoreTask {
 		return false;
 	}
 
+    // olsrd
     public boolean killProcess(String processName) {
     	boolean killSuccess = false;
     	List<String> targetIDList = new ArrayList<String>();

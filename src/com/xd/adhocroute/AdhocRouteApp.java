@@ -64,12 +64,15 @@ public class AdhocRouteApp extends Application {
 	}
 	
 	private void setNAT() {
+		coretask.delAllNat();
+		// 
+		
 		// 设置NAT
 	}
 	
 	private void setDNS() {
 		String dns = preferenceUtils.getString("dns", "8.8.8.8");
-		CoreTask.setDns(dns);
+		CoreTask.setFirstDns(dns);
 	}
 	
 	public void stopProcess(final String proc) {

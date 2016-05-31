@@ -47,3 +47,27 @@
 > 补充safeStopOlsr方法
 
 > 完善APP运行状态，分成stop，网络构建失败/成功，路由启动失败/成功状态
+
+###update：2016年5月29日17:26:03
+已完成：
+
+> 1.完善路由相关设置信息，增加输入的合法性判断
+
+> 2.更改启动方式，网卡信息由配置件给出
+
+> 3.更新Config类为RouteConfig类，更新实现方式，增加路由设置的API
+
+> 4.更新NativeHelper类为ConfigHelper类，完善配置更新的相关写入操作
+
+> 5.增加PreferenceUtils类来管理本地保存相关的操作
+
+> 6.增加类注释
+
+###update：2016年5月31日19:58:50
+已完成：
+
+> 1.修改CoreTask#networkInterfaceExists函数
+
+> 2.修改RouteConfig#SimpleInfo的bug
+
+> 3.更新首选和备选DNS

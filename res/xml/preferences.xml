@@ -123,7 +123,7 @@
     <PreferenceCategory android:title="NAT设置" >
         <CheckBoxPreference
             android:key="open_nat"
-            android:defaultValue="true"
+            android:defaultValue="false"
             android:title="开启NAT"
             android:summary="开启NAT功能"
             android:summaryOn="开启NAT功能"

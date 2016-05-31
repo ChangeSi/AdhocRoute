@@ -25,6 +25,11 @@ public class RouteConfig {
 	private Vector<RouteConfig.SimpleInfo> simpleInfos;
 	private Vector<RouteConfig.ComplexInfo> complexInfos;
 	
+	public RouteConfig() {
+		baseConfiguration = "";
+		simpleInfos = new Vector<RouteConfig.SimpleInfo>();
+		complexInfos = new Vector<RouteConfig.ComplexInfo>();
+	}
 	public RouteConfig(String baseConfiguration) throws IOException, FileNotFoundException {
 		this(new FileInputStream(baseConfiguration));
 	}
@@ -87,6 +92,9 @@ public class RouteConfig {
 	 */
 	public static class SimpleInfo {
 		protected Map<String, String> parameterMap;
+		public SimpleInfo () {
+			parameterMap = new HashMap<String, String>();
+		}
 		public void addParamKeyValue(String key, String value) {
 			parameterMap.put(key, value);
 		}
