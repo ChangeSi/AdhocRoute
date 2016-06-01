@@ -123,6 +123,7 @@ public class JsonInfo {
 		} catch (IOException e) {
 			System.err.println("Failed to read data from " + host + ":"
 					+ Integer.toString(port));
+			e.printStackTrace();
 		}
 		for (String s : data) {
 			ret += s + "\n";

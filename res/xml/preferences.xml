@@ -149,7 +149,7 @@
             android:dialogTitle="设置通过该IP的数据包进行NAT" 
 			android:dialogMessage="设置通过如下设置的IP的数据包进行NAT："
              />
-        <EditTextPreference
+        <com.xd.adhocroute.route.InterfaceEditPreference
             android:key="natinterface"
             android:singleLine="true"
             android:title="映射网卡"
