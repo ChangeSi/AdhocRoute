@@ -109,7 +109,7 @@ public class SettingsActivity extends PreferenceActivity implements
 			}
 		}
 	}
-
+	
 	@Override
 	public void onBackPressed() {
 		if (openNat.isChecked()) {
