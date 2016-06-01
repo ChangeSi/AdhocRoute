@@ -98,6 +98,11 @@ public class SettingsActivity extends PreferenceActivity implements
 			}
 		}
 	}
-
+//这里添加的是
+//	@Override
+//	public void onBackPressed() {
+//		// TODO 自动生成的方法存根
+//		super.onBackPressed();
+//	}
 	
 }
