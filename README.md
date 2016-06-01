@@ -71,3 +71,9 @@
 > 2.修改RouteConfig#SimpleInfo的bug
 
 > 3.更新首选和备选DNS
+
+
+###update：2016年6月1日15:59:38
+已完成：
+
+> 1.更新了SettingActivity类的onBackPressed函数，当开启NAT时必须至少填写一项
