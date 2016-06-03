@@ -22,7 +22,7 @@ public class InterfaceEditPreference extends EditTextPreference {
 
 	@Override
 	protected void onAddEditTextToDialogView(View dialogView, EditText editText) {
-		editText.setKeyListener(DigitsKeyListener.getInstance("abcdefghijklmnopqrstuvwxyz0123456789"));
+//		editText.setKeyListener(DigitsKeyListener.getInstance("abcdefghijklmnopqrstuvwxyz0123456789"));
 		super.onAddEditTextToDialogView(dialogView, editText);
 	}
 	public boolean interfaceCheck(String text) {

@@ -1,16 +1,15 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.xd.meshroute.MainActivity" >
-
-    <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:showAsAction="never"
-        android:title="@string/route_settings"/>
-    
     <item
         android:id="@+id/net_settings"
         android:orderInCategory="100"
         android:showAsAction="never"
         android:title="@string/net_settings"/>
+    <item
+        android:id="@+id/route_settings"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/route_settings"/>
+    
 </menu>

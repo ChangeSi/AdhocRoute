@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:title="网络设置" >
+    
+    <PreferenceCategory android:title="节点设置" >
+        <EditTextPreference
+            android:key="ssid"
+            android:defaultValue="AdhocRoute"
+            android:summary="Adhoc网络号"
+            android:title="SSID" />
+        <com.xd.adhocroute.route.IPEditPreference
+            android:title="IP"
+            android:key="adhoc_ip"
+            android:singleLine="true"
+            android:defaultValue=""
+            android:summary="Adhoc节点IP"
+            android:dialogTitle="Adhoc节点IP" 
+			android:dialogMessage="设置Adhoc节点IP："
+             />
+        <com.xd.adhocroute.route.MaskEditPreference
+            android:title="MASK"
+            android:key="adhoc_mask"
+            android:singleLine="true"
+            android:defaultValue="255.255.255.0"
+            android:summary="Adhoc网络的掩码信息"
+            android:dialogTitle="Adhoc网络的掩码信息" 
+			android:dialogMessage="设置Adhoc网络的掩码信息："
+             />
+        <ListPreference
+            android:summary="Adhoc网络的信道选择"
+            android:dialogTitle="Adhoc网络的信道选择" 
+            android:key="lan_channel"
+            android:title="信道" />
+        
+    </PreferenceCategory>
+</PreferenceScreen>

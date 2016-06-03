@@ -4,17 +4,37 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginTop="5dp" >
+<!--     <RelativeLayout -->
+<!--         android:layout_width="match_parent" -->
+<!--         android:layout_height="50dp" -->
+<!--         android:layout_marginTop="5dp" > -->
+
+<!--         <TextView -->
+<!--             android:layout_width="wrap_content" -->
+<!--             android:layout_height="match_parent" -->
+<!--             android:layout_marginLeft="5dp" -->
+<!--             android:gravity="center_vertical" -->
+<!--             android:text="Ad-hoc路由" -->
+<!--             android:textColor="#fff" -->
+<!--             android:textSize="18sp" /> -->
+
+<!--         <ImageButton -->
+<!--             android:id="@+id/ib_olsrd" -->
+<!--             android:layout_width="wrap_content" -->
+<!--             android:layout_height="wrap_content" -->
+<!--             android:layout_centerInParent="true" -->
+<!--             android:layout_marginTop="5dp" -->
+<!--             android:gravity="center_vertical" -->
+<!--             android:src="@drawable/power_off_icon" /> -->
+<!--     </RelativeLayout> -->
 
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
-            android:gravity="center_vertical"
-            android:text="Ad-hoc路由"
+            android:layout_gravity="center_horizontal"
+            android:text="Ad-hoc路由演示"
+            android:layout_marginTop="5dp"
             android:textColor="#fff"
             android:textSize="18sp" />
 
@@ -22,12 +42,16 @@
             android:id="@+id/ib_olsrd"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
             android:layout_marginTop="5dp"
             android:gravity="center_vertical"
             android:src="@drawable/power_off_icon" />
-    </RelativeLayout>
-
+            
+        <TextView
+            android:id="@+id/tv_state"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="stop"
+            android:layout_margin="5dp"/>
 
     <View
         android:layout_width="match_parent"

@@ -17,7 +17,7 @@ import com.xd.adhocroute.route.IPEditPreference;
 import com.xd.adhocroute.route.InterfaceEditPreference;
 import com.xd.adhocroute.route.NetIPEditPreference;
 
-public class SettingsActivity extends PreferenceActivity implements
+public class RouteSettingsActivity extends PreferenceActivity implements
 		OnSharedPreferenceChangeListener {
 	
 	private EditTextPreference ssid;
@@ -38,7 +38,7 @@ public class SettingsActivity extends PreferenceActivity implements
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		addPreferencesFromResource(R.xml.preferences);
+		addPreferencesFromResource(R.xml.routepreferences);
 		init();
 	}
 
@@ -114,7 +114,7 @@ public class SettingsActivity extends PreferenceActivity implements
 	public void onBackPressed() {
 		if (openNat.isChecked()) {
 			if (natInterface.getText().trim().isEmpty() && natIp.getText().trim().isEmpty() && natSubnet.getText().trim().isEmpty()) {
-				Toast.makeText(SettingsActivity.this, "至少填写一个NAT参数", Toast.LENGTH_SHORT).show();
+				Toast.makeText(RouteSettingsActivity.this, "至少填写一个NAT参数", Toast.LENGTH_SHORT).show();
 			}
 		} else {
 			super.onBackPressed();

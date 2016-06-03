@@ -21,7 +21,6 @@ import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.xd.adhocroute.data.Interface;
 import com.xd.adhocroute.data.OlsrDataDump;
@@ -35,11 +34,9 @@ import com.xd.adhocroute.utils.ConfigHelper;
 public class MainActivity extends Activity implements OnClickListener {
 
 	public static final String ACTION_DIALOG_SHOW_BROADCASTRECEIVER = "action.dialog.startroute.show";
-	public static final String ACTION_DIALOG_HIDE_BROADCASTRECEIVER = "action.dialog.startroute.hide";
-	public static final int INTERFACE_NOT_EXIST = 0x01;
-	public static boolean routeRunning;
+	public static final String ACTION_DIALOG_ROUTE_HIDE_BROADCASTRECEIVER = "action.dialog.startroute.hide";
+	public static final int INTERFACE_NOT_EXIST = 0x08;
 	private ImageButton olsrd_switch;
-//	private AdhocRun adhocRun;
 	private List<Route> routeTables = new ArrayList<Route>();
 	private AdhocRouteApp app;
 	private ListView lvRoute;
@@ -61,7 +58,7 @@ public class MainActivity extends Activity implements OnClickListener {
 			if (mainActivity == null) return;
 			switch (msg.what) {
 			case INTERFACE_NOT_EXIST:
-				Toast.makeText(mainActivity, "指定的网卡不存在", Toast.LENGTH_LONG).show();
+				mainActivity.app.showToastMsg("指定的网卡不存在");
 				break;
 			default:
 				break;
@@ -74,8 +71,6 @@ public class MainActivity extends Activity implements OnClickListener {
 		super.onCreate(savedInstanceState);
 		app = (AdhocRouteApp) getApplication();
 		setContentView(R.layout.activity_main);
-//		adhocRun = new AdhocRun(this);
-//		adhocRun.startScanThread();
 		registerDialogBroadcastReceiver();
 		initUI();
 		setSwitchState();
@@ -96,10 +91,11 @@ public class MainActivity extends Activity implements OnClickListener {
 		if (app.service == null) {
 			// service为null说明首次启动手机
 			app.stopProcess(RouteServices.CMD_OLSR);
-			routeRunning = false;
+			app.adhocHelper.exitNet();
+			AdhocRouteApp.appState = false;
 			olsrd_switch.setImageResource(R.drawable.power_off_icon);
 		} else {
-			routeRunning = true;
+			AdhocRouteApp.appState = true;
 			olsrd_switch.setImageResource(R.drawable.power_on_icon);
 		}
 	}
@@ -142,8 +138,12 @@ public class MainActivity extends Activity implements OnClickListener {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
-		if (id == R.id.action_settings) {
-			Intent intent = new Intent(this, SettingsActivity.class);
+		if (id == R.id.route_settings) {
+			Intent intent = new Intent(this, RouteSettingsActivity.class);
+			this.startActivity(intent);
+			return true;
+		} else if (id == R.id.net_settings) {
+			Intent intent = new Intent(this, NetSettingsActivity.class);
 			this.startActivity(intent);
 			return true;
 		}
@@ -153,34 +153,41 @@ public class MainActivity extends Activity implements OnClickListener {
 	@Override
 	public void onClick(View v) {
 		if (v.getId() == R.id.ib_olsrd) {
-			if (!routeRunning) { 
+			if (!AdhocRouteApp.appState) { 
 				showDialog();
 				app.getGlobalThreadPool().execute(new Runnable() {
 					@Override
 					public void run() {
-						if (!ConfigHelper.configAPP(MainActivity.this)) {
-							handler.sendEmptyMessage(INTERFACE_NOT_EXIST);
-							// 关闭进度条
-							tipDialog.dismiss();
-							routeRunning = false;
+						// 建网
+						if (app.adhocHelper.openWifiAndConnect()) {
+							if (!ConfigHelper.configAPP(MainActivity.this)) {
+								handler.sendEmptyMessage(INTERFACE_NOT_EXIST);
+								// 关闭进度条
+								tipDialog.dismiss();
+								app.adhocHelper.exitNet();
+							} else {
+								app.startService();
+							}
 						} else {
-							app.startService();
+							// 建网失败
+							tipDialog.dismiss();
+							app.adhocHelper.exitNet();
 						}
 					}
 				});
- 			} else {
+ 			} else{
 				// 关闭路由 
 				app.stopService();
-				routeRunning = false;
+				AdhocRouteApp.appState = false;
 				olsrd_switch.setImageResource(R.drawable.power_off_icon);
 			}
 		}
 	}
-
+	
 	private void showDialog() {
 		tipDialog = new ProgressDialog(this);
-		tipDialog.setTitle("启动路由");
-		tipDialog.setMessage("路由正在启动中");
+		tipDialog.setTitle("自组织网络客户端");
+		tipDialog.setMessage("自组织网络正在启动中...");
 		tipDialog.setCanceledOnTouchOutside(false);
 		tipDialog.setCancelable(false);
 		tipDialog.show();
@@ -188,14 +195,13 @@ public class MainActivity extends Activity implements OnClickListener {
 
 	private void registerDialogBroadcastReceiver() {
 		IntentFilter filter = new IntentFilter();  
-        filter.addAction(ACTION_DIALOG_HIDE_BROADCASTRECEIVER);  
-        registerReceiver(dialogShowHideReceiver, filter);  
+        filter.addAction(ACTION_DIALOG_ROUTE_HIDE_BROADCASTRECEIVER);
+        registerReceiver(dialogShowHideReceiver, filter);
 	}
 	
 	private void unregisterDialogBroadcastReceiver() {
         unregisterReceiver(dialogShowHideReceiver);
 	}
-	
 	private BroadcastReceiver dialogShowHideReceiver = new BroadcastReceiver(){  
 		  
         @Override
@@ -203,19 +209,18 @@ public class MainActivity extends Activity implements OnClickListener {
             String action = intent.getAction();
         	if (action.equals(ACTION_DIALOG_SHOW_BROADCASTRECEIVER)){
         		// Omitted
-        	} else if (action.equals(ACTION_DIALOG_HIDE_BROADCASTRECEIVER)) {
+        	} else if (action.equals(ACTION_DIALOG_ROUTE_HIDE_BROADCASTRECEIVER)) {
         		boolean isStarted = intent.getBooleanExtra("isStarted", false);
         		if (tipDialog != null) {
         			tipDialog.dismiss();
         		}
         		if (isStarted) {
-        			Toast.makeText(MainActivity.this, "路由启动成功", Toast.LENGTH_LONG).show();
-        			routeRunning = true; 
+        			app.showToastMsg("自组织网络启动成功");
         			olsrd_switch.setImageResource(R.drawable.power_on_icon);
         		} else {
-        			Toast.makeText(MainActivity.this, "路由启动异常，请重新启动", Toast.LENGTH_LONG).show();
-        			routeRunning = false;
+        			app.showToastMsg("自组织网络启动异常，请重新启动");
         			olsrd_switch.setImageResource(R.drawable.power_off_icon);
+        			app.adhocHelper.exitNet();
         		}
         	}
         }
