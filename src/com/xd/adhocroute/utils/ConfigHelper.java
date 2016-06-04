@@ -14,7 +14,6 @@ import android.content.res.AssetManager;
 import android.util.Log;
 
 import com.xd.adhocroute.AdhocRouteApp;
-import com.xd.adhocroute.data.Interface;
 import com.xd.adhocroute.route.RouteConfig;
 
 public class ConfigHelper {
@@ -80,7 +79,6 @@ public class ConfigHelper {
 
 		return result;
 	}
-
 	public static void chmod(String modestr, File path) {
 		Log.i(TAG, "chmod " + modestr + " " + path.getAbsolutePath());
 		try {
@@ -91,9 +89,7 @@ public class ConfigHelper {
 			int a = (Integer) setPermissions.invoke(null,
 					path.getAbsolutePath(), mode, -1, -1);
 			if (a != 0) {
-				Log.i(TAG,
-						"ERROR: android.os.FileUtils.setPermissions() returned "
-								+ a + " for '" + path + "'");
+				Log.i(TAG,"ERROR: android.os.FileUtils.setPermissions() returned " + a + " for '" + path + "'");
 			}
 		} catch (ClassNotFoundException e) {
 			Log.i(TAG, "android.os.FileUtils.setPermissions() failed:", e);

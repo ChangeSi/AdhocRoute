@@ -1,5 +1,7 @@
 package com.xd.adhocroute.route;
 
+import com.xd.adhocroute.R;
+
 import android.content.Context;
 import android.preference.EditTextPreference;
 import android.text.method.DigitsKeyListener;
@@ -47,7 +49,7 @@ public class NetIPEditPreference extends EditTextPreference {
 		if (positiveResult) {
 			String addr = getEditText().getText().toString();
 			if (!validate(addr)) {
-				Toast.makeText(getContext(), "格式不正确", Toast.LENGTH_LONG).show();
+				Toast.makeText(getContext(), R.string.setting_preference_format_error, Toast.LENGTH_SHORT).show();
 				positiveResult = false;
 			}
 		}

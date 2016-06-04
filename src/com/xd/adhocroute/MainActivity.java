@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
@@ -21,7 +20,6 @@ import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import com.xd.adhocroute.data.Interface;
 import com.xd.adhocroute.data.OlsrDataDump;
 import com.xd.adhocroute.data.Route;
@@ -40,10 +38,12 @@ public class MainActivity extends Activity implements OnClickListener {
 	private List<Route> routeTables = new ArrayList<Route>();
 	private AdhocRouteApp app;
 	private ListView lvRoute;
+	private View emptyListView;
 	private Timer timer;
 	private TextView tvinfo;
 	private RouteAdapter adapter;
 	private ProgressDialog tipDialog;
+	
 	
 	private Handler handler = new UIHandler(this);
 	
@@ -58,7 +58,7 @@ public class MainActivity extends Activity implements OnClickListener {
 			if (mainActivity == null) return;
 			switch (msg.what) {
 			case INTERFACE_NOT_EXIST:
-				mainActivity.app.showToastMsg("指定的网卡不存在");
+				mainActivity.app.showToastMsg(R.string.toast_interface_set_not_exist);
 				break;
 			default:
 				break;
@@ -77,11 +77,12 @@ public class MainActivity extends Activity implements OnClickListener {
 		adapter = new RouteAdapter(routeTables, this);
 		lvRoute.setAdapter(adapter);
 		timer = new Timer();
-		timer.schedule(new RefreshTimeTask(), 0, 2000);
+		timer.schedule(new RefreshTimeTask(), 0, 1000);
 	}
 
 	private void initUI() {
 		lvRoute = (ListView) findViewById(R.id.lv_route);
+		emptyListView = findViewById(R.id.empty_list_view);
 		olsrd_switch = (ImageButton) findViewById(R.id.ib_olsrd);
 		tvinfo = (TextView) findViewById(R.id.tv_info);
 		olsrd_switch.setOnClickListener(this);
@@ -114,15 +115,25 @@ public class MainActivity extends Activity implements OnClickListener {
 									 + "mac地址：" + inface.macAddress
 										);
 					}
-					adapter.update((List<Route>)olsrDataDump.routes);
+					List<Route> routes = (List<Route>)olsrDataDump.routes;
+					if (routes.size() == 0) {
+						emptyListView.setVisibility(View.VISIBLE);
+						lvRoute.setVisibility(View.GONE);
+					} else {
+						lvRoute.setVisibility(View.VISIBLE);
+						emptyListView.setVisibility(View.GONE);
+					}
+					adapter.update(routes);
 				}
 				
 				@Override
 				public void onException(int exception) {
 					if (exception == RouteRefresh.REFRESH_UNSTARTED) {
 						// 路由未开启
+						lvRoute.setVisibility(View.INVISIBLE);
+						emptyListView.setVisibility(View.INVISIBLE);
 						adapter.update(new ArrayList<Route>());
-						tvinfo.setText("路由未开启");
+						tvinfo.setText(R.string.adhoc_not_started);
 					}
 				}
 			});
@@ -176,7 +187,7 @@ public class MainActivity extends Activity implements OnClickListener {
 					}
 				});
  			} else{
-				// 关闭路由 
+				// 关闭路由
 				app.stopService();
 				AdhocRouteApp.appState = false;
 				olsrd_switch.setImageResource(R.drawable.power_off_icon);
@@ -186,8 +197,8 @@ public class MainActivity extends Activity implements OnClickListener {
 	
 	private void showDialog() {
 		tipDialog = new ProgressDialog(this);
-		tipDialog.setTitle("自组织网络客户端");
-		tipDialog.setMessage("自组织网络正在启动中...");
+		tipDialog.setTitle(R.string.adhoc_start_dialog_title);
+		tipDialog.setMessage(getString(R.string.adhoc_start_dialog_message));
 		tipDialog.setCanceledOnTouchOutside(false);
 		tipDialog.setCancelable(false);
 		tipDialog.show();
@@ -215,10 +226,10 @@ public class MainActivity extends Activity implements OnClickListener {
         			tipDialog.dismiss();
         		}
         		if (isStarted) {
-        			app.showToastMsg("自组织网络启动成功");
+        			app.showToastMsg(R.string.toast_adhoc_start_succeed);
         			olsrd_switch.setImageResource(R.drawable.power_on_icon);
         		} else {
-        			app.showToastMsg("自组织网络启动异常，请重新启动");
+        			app.showToastMsg(R.string.toast_adhoc_start_failed);
         			olsrd_switch.setImageResource(R.drawable.power_off_icon);
         			app.adhocHelper.exitNet();
         		}
@@ -232,5 +243,5 @@ public class MainActivity extends Activity implements OnClickListener {
 		unregisterDialogBroadcastReceiver();
 		super.onDestroy();
 	}
-
+	
 }

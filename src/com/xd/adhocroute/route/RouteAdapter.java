@@ -57,7 +57,7 @@ public class RouteAdapter extends BaseAdapter{
 		}
 		
 		holder.tvDest.setText(routeTables.get(position).destination);
-		holder.tvmask.setText(routeTables.get(position).genmask + "");
+		holder.tvmask.setText("/" + routeTables.get(position).genmask);
 		holder.tvGateway.setText(routeTables.get(position).gateway);
 		holder.tvMetric.setText(routeTables.get(position).metric + "");
 		holder.tvETX.setText(routeTables.get(position).rtpMetricCost + "");

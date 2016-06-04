@@ -6,6 +6,37 @@
     <string name="net_settings">网络设置</string>
     <string name="route_settings">路由设置</string>
 
+    <string name="title">WIFI自组网演示</string>
+    <string name="start_adhoc_tips">启动自组织网络</string>
+    <string name="baseinfo_adhoc_unstarted">路由未开启</string>
+    <string name="empty_listview_tips">自组织网络正在初始化，正在发现周围的节点\u2026</string>
+    <string name="tv_dest_tag">目的地址</string>
+    <string name="tv_mask_tag">掩码</string>
+    <string name="tv_dest_content">192.168.2.251</string>
+    <string name="tv_mask_content">/32</string>
+    <string name="tv_next_tag">下一跳</string>
+    <string name="tv_next_content">192.168.2.250</string>
+    <string name="tv_hps_tag">跳数</string>
+    <string name="tv_hps_content">2</string>
+    <string name="tv_etx_tag">ETX</string>
+    <string name="tv_etx_content">1.005</string>
+    <string name="tv_interface_tag">网卡</string>
+    <string name="tv_interface_content">wlan0</string>
+    <string name="toast_interface_set_not_exist">指定的网卡不存在</string>
+    <string name="adhoc_not_started">自组织网络未开启</string>
+    <string name="adhoc_start_dialog_title">自组织网络客户端</string>
+    <string name="adhoc_start_dialog_message">自组织网络正在启动中\u2026</string>
+    <string name="toast_adhoc_start_succeed">自组织网络启动成功</string>
+    <string name="toast_adhoc_start_failed">自组织网络启动异常，请重新启动</string>
+    <string name="setting_preference_format_error">格式不正确</string>
+    <string name="toast_open_wifi_succeed">开启WIFI成功</string>
+    <string name="toast_close_wifi_succeed">断开网络成功</string>
+    <string name="toast_device_ip_not_set">设备IP未设置</string>
+    <string name="toast_net_id">Adhoc网络创建成功，网络ID：</string>
+    <string name="adhoc_build_adhoc_failed">Adhoc网络创建失败</string>
+    
+</resources>
+
 <!--     <string-array name="channel_values"> -->
 <!--         <item>1</item> -->
 <!--         <item>2</item> -->
@@ -37,5 +68,3 @@
 <!--         <item>12 – 2467 MHz</item> -->
 <!--         <item>13 – 2472 MHz</item> -->
 <!--     </string-array> -->
-    
-</resources>

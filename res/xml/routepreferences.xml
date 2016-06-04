@@ -109,13 +109,22 @@
     
     <PreferenceCategory android:title="DNS设置" >
         <com.xd.adhocroute.route.IPEditPreference
-            android:title="设置DNS"
-            android:summary="设置DNS"
-            android:dialogTitle="设置DNS" 
+            android:title="设置首选DNS"
+            android:summary="设置首选DNS"
+            android:dialogTitle="设置首选DNS" 
 			android:dialogMessage="使用如下DNS服务器地址："
-            android:key="dns"
+            android:key="dns1"
             android:singleLine="true"
             android:defaultValue="8.8.8.8"
+         />
+        <com.xd.adhocroute.route.IPEditPreference
+            android:title="设置备选DNS"
+            android:summary="设置备选DNS"
+            android:dialogTitle="设置备选DNS" 
+			android:dialogMessage="使用如下DNS服务器地址："
+            android:key="dns2"
+            android:singleLine="true"
+            android:defaultValue="8.8.4.4"
          />
        
     </PreferenceCategory>

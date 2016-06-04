@@ -8,6 +8,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
+import android.test.UiThreadTest;
 
 import com.xd.adhocroute.AdhocRouteApp;
 import com.xd.adhocroute.MainActivity;
@@ -18,7 +19,7 @@ public class RouteServices extends Service {
 	private static final int ID_FORGROUND = 2;
 	private String olsrdPath;
 	private String olsrdConfPath;
-	private String OLSR_START = "";
+	private String OLSR_START_CMD = "";
 	
 	private AdhocRouteApp app = null;
 	
@@ -26,19 +27,20 @@ public class RouteServices extends Service {
 	public void onCreate() {
 		super.onCreate();
 		app = (AdhocRouteApp)getApplication();
-		runForground();
+//		runForground();
 		olsrdPath = new File(getDir("bin", Context.MODE_PRIVATE), "olsrd").getAbsolutePath();
 		olsrdConfPath = new File(getFilesDir(), "olsrd.conf").getAbsolutePath();
-		OLSR_START = olsrdPath + " -f " +  olsrdConfPath; /* + " -i " + inface*/
+		OLSR_START_CMD = olsrdPath + " -f " +  olsrdConfPath; /* + " -i " + inface*/
 	}
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		app.serviceStarted(this);
-		flags = START_STICKY;  
+		flags = START_STICKY;
 		return super.onStartCommand(intent, flags, startId);
 	}
 
+	@SuppressWarnings("unused")
 	private void runForground(){
 		// 创建一个启动其他Activity的Intent  
         Intent intent = new Intent(this  
@@ -68,7 +70,7 @@ public class RouteServices extends Service {
 	}
 	
 	public void startOLSR() {
-		app.startProcess(OLSR_START);
+		app.startProcess(OLSR_START_CMD);
 	}
 	
 	public void stopOLSR() {

@@ -7,6 +7,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+import com.xd.adhocroute.R;
 /**
  * 支持判断是否是合法的IP地址
  * @author qhyuan1992
@@ -47,7 +48,7 @@ public class IPEditPreference extends EditTextPreference {
 		if (positiveResult) {
 			String addr = getEditText().getText().toString();
 			if (!validate(addr)) {
-				Toast.makeText(getContext(), "格式不正确", Toast.LENGTH_LONG).show();
+				Toast.makeText(getContext(), R.string.setting_preference_format_error, Toast.LENGTH_LONG).show();
 				positiveResult = false;
 			}
 		}

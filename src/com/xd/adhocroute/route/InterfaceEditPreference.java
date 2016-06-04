@@ -2,13 +2,13 @@ package com.xd.adhocroute.route;
 
 import android.content.Context;
 import android.preference.EditTextPreference;
-import android.text.method.DigitsKeyListener;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.xd.adhocroute.AdhocRouteApp;
+import com.xd.adhocroute.R;
 
 /**
  * 支持判断网卡是否存在
@@ -22,7 +22,6 @@ public class InterfaceEditPreference extends EditTextPreference {
 
 	@Override
 	protected void onAddEditTextToDialogView(View dialogView, EditText editText) {
-//		editText.setKeyListener(DigitsKeyListener.getInstance("abcdefghijklmnopqrstuvwxyz0123456789"));
 		super.onAddEditTextToDialogView(dialogView, editText);
 	}
 	public boolean interfaceCheck(String text) {
@@ -40,7 +39,7 @@ public class InterfaceEditPreference extends EditTextPreference {
 		if (positiveResult) {
 			String addr = getEditText().getText().toString();
 			if (!validate(addr)) {
-				Toast.makeText(getContext(), "指定的网卡不存在", Toast.LENGTH_LONG).show();
+				Toast.makeText(getContext(), R.string.toast_interface_set_not_exist, Toast.LENGTH_SHORT).show();
 				positiveResult = false;
 			}
 		}

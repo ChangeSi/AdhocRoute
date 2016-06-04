@@ -98,8 +98,7 @@ public class JsonInfo {
 			System.err.println("Unknown host: " + host);
 			return new String[0];
 		} catch (IOException e) {
-			System.err.println("Couldn't get I/O for socket to " + host + ":"
-					+ Integer.toString(port));
+			System.err.println("can not get I/O for socket to " + host + ":" + port);
 			return new String[0];
 		}
 		out.println(req);
@@ -121,8 +120,7 @@ public class JsonInfo {
 		try {
 			data = request(cmdString);
 		} catch (IOException e) {
-			System.err.println("Failed to read data from " + host + ":"
-					+ Integer.toString(port));
+			System.err.println("Failed to read data from " + host + ":" + port);
 			e.printStackTrace();
 		}
 		for (String s : data) {
@@ -220,6 +218,8 @@ public class JsonInfo {
 		return command("/olsrd.conf");
 	}
 	
+	// test
+	@SuppressWarnings("unused")
 	public static void main(String[] args) throws IOException {
 		JsonInfo jsoninfo = new JsonInfo();
 		OlsrDataDump dump = jsoninfo.all();

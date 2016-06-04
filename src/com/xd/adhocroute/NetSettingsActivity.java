@@ -7,30 +7,21 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.net.wifi.WifiChannel;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.preference.CheckBoxPreference;
-import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.PreferenceActivity;
-import android.widget.Toast;
-
-import com.xd.adhocroute.route.IPEditPreference;
-import com.xd.adhocroute.route.InterfaceEditPreference;
-import com.xd.adhocroute.route.MaskEditPreference;
-import com.xd.adhocroute.route.NetIPEditPreference;
 
 public class NetSettingsActivity extends PreferenceActivity implements
 		OnSharedPreferenceChangeListener {
 
-	private EditTextPreference ssid;
 	private ListPreference channel;
-	private IPEditPreference ip;
-	private MaskEditPreference mask;
 	private String[] channelEntry;
+	private AdhocRouteApp app;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		addPreferencesFromResource(R.xml.netpreferences);
+		app = (AdhocRouteApp)getApplication();
 		init();
 	}
 
@@ -50,12 +41,9 @@ public class NetSettingsActivity extends PreferenceActivity implements
 	}
 
 	private void init() {
-		ssid = (EditTextPreference) findPreference("ssid");
 		channel = (ListPreference) findPreference("lan_channel");
-		ip = (IPEditPreference) findPreference("adhoc_ip");
-		mask = (MaskEditPreference) findPreference("adhoc_mask");
 		channel.setEntryValues(getAllChannels());
-		channel.setValue("2412");
+		channel.setValue(app.preferenceUtils.getString("lan_channel", "2412"));
 		channel.setEntries(getAllChannelNames());
 	}
 

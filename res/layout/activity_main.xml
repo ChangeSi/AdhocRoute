@@ -4,72 +4,65 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-<!--     <RelativeLayout -->
-<!--         android:layout_width="match_parent" -->
-<!--         android:layout_height="50dp" -->
-<!--         android:layout_marginTop="5dp" > -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="5dp"
+        android:text="@string/title"
+        android:textColor="#fff"
+        android:textSize="18sp" />
 
-<!--         <TextView -->
-<!--             android:layout_width="wrap_content" -->
-<!--             android:layout_height="match_parent" -->
-<!--             android:layout_marginLeft="5dp" -->
-<!--             android:gravity="center_vertical" -->
-<!--             android:text="Ad-hoc路由" -->
-<!--             android:textColor="#fff" -->
-<!--             android:textSize="18sp" /> -->
-
-<!--         <ImageButton -->
-<!--             android:id="@+id/ib_olsrd" -->
-<!--             android:layout_width="wrap_content" -->
-<!--             android:layout_height="wrap_content" -->
-<!--             android:layout_centerInParent="true" -->
-<!--             android:layout_marginTop="5dp" -->
-<!--             android:gravity="center_vertical" -->
-<!--             android:src="@drawable/power_off_icon" /> -->
-<!--     </RelativeLayout> -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="5dp" >
 
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginLeft="5dp"
-            android:layout_gravity="center_horizontal"
-            android:text="Ad-hoc路由演示"
-            android:layout_marginTop="5dp"
-            android:textColor="#fff"
-            android:textSize="18sp" />
+            android:gravity="center_vertical"
+            android:text="@string/start_adhoc_tips"
+            android:textSize="16sp" />
 
         <ImageButton
             android:id="@+id/ib_olsrd"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
             android:layout_marginTop="5dp"
             android:gravity="center_vertical"
             android:src="@drawable/power_off_icon" />
-            
-        <TextView
-            android:id="@+id/tv_state"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="stop"
-            android:layout_margin="5dp"/>
+    </RelativeLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
         android:background="#ccc" />
-<TextView
+
+    <TextView
         android:id="@+id/tv_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="路由未开启"
-        android:textColor="#fff"
+        android:text="@string/baseinfo_adhoc_unstarted"
+        android:layout_margin="5dp"
         android:textSize="16sp" />
-        
-    
+
     <ListView
-        android:layout_marginTop="10dp"
         android:id="@+id/lv_route"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_marginTop="10dp"
+        android:visibility="gone"
+         />
+
+    <TextView
+        android:id="@+id/empty_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:visibility="gone"
+        android:text="@string/empty_listview_tips" />
 
 </LinearLayout>

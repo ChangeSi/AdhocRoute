@@ -1,10 +1,11 @@
 package com.xd.adhocroute.net;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.wifi.WifiManager;
 import android.os.Handler;
-
 import com.xd.adhocroute.AdhocRouteApp;
+import com.xd.adhocroute.R;
 
 public class AdhocHelper {
 	protected static final int WIFI_START_SUCCEED = 0;
@@ -16,21 +17,22 @@ public class AdhocHelper {
 	public Handler handler;
 	public AdhocRouteApp app;
 
+	@SuppressLint("HandlerLeak")
 	public AdhocHelper(final Context context) {
 		wifiAdmin = new WifiAdmin(context);
 		this.app = (AdhocRouteApp) context.getApplicationContext();
 		handler = new Handler() {
 			public void handleMessage(android.os.Message msg) {
 				if (msg.what == WIFI_START_SUCCEED) {
-					app.showToastMsg("开启WIFI成功");
+					app.showToastMsg(R.string.toast_open_wifi_succeed);
 				} else if (msg.what == WIFI_CLOSE_SUCCEED) {
-					app.showToastMsg("断开网络成功");
+					app.showToastMsg(R.string.toast_close_wifi_succeed);
 				} else if (msg.what == IP_NOT_SET) {
-					app.showToastMsg("设备IP未设置");
+					app.showToastMsg(R.string.toast_device_ip_not_set);
 				} else if (msg.what == ADHOC_NET_ID) {
-					app.showToastMsg("Adhoc网络创建成功，网络ID：" + (Integer) msg.obj);
+					app.showToastMsg(context.getString(R.string.toast_net_id) + (Integer) msg.obj);
 				} else if (msg.what == ADHOC_NET_FAILED) {
-					app.showToastMsg("Adhoc网络创建失败");
+					app.showToastMsg(R.string.adhoc_build_adhoc_failed);
 				}
 			};
 		};
@@ -74,8 +76,7 @@ public class AdhocHelper {
 	private boolean connectWithRightParams() {
 		String ssid = app.preferenceUtils.getString("ssid", "AdhocRoute");
 		String ip = app.preferenceUtils.getString("adhoc_ip", "");
-		String mask = app.preferenceUtils.getString("adhoc_mask",
-				"255.255.255.0");
+		String mask = app.preferenceUtils.getString("adhoc_mask", "255.255.255.0");
 		String channel = app.preferenceUtils.getString("lan_channel", "2412");
 		if (ip.isEmpty()) {
 			handler.sendEmptyMessage(IP_NOT_SET);

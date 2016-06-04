@@ -52,6 +52,16 @@ public class AdhocRouteApp extends Application {
         toast.show();
     }
 	
+	public void showToastMsg(int msgID) {
+        if (toast == null) {
+            toast = Toast.makeText(this, getString(msgID), Toast.LENGTH_SHORT);
+        } else {
+            toast.setText(getString(msgID));
+            toast.setDuration(Toast.LENGTH_SHORT);
+        }
+        toast.show();
+    }
+	
 	public ExecutorService getGlobalThreadPool() {
 		return executorService;
 	}
@@ -99,7 +109,7 @@ public class AdhocRouteApp extends Application {
 		});
 	}
 	
-private void setNAT() {
+	private void setNAT() {
 		// 设置NAT
 		if (preferenceUtils.getBoolean("open_nat", false)) {
 			// 先查看是否文件里是不是“1”，不是1设置成1
@@ -132,8 +142,10 @@ private void setNAT() {
 	}
 	
 	private void setDNS() {
-		String dns = preferenceUtils.getString("dns", "8.8.8.8");
-		CoreTask.setFirstDns(dns);
+		String firstDns = preferenceUtils.getString("dns1", "8.8.8.8");
+		String secondDns = preferenceUtils.getString("dns2", "8.8.4.4");
+		CoreTask.setFirstDns(firstDns);
+		CoreTask.setSecondDns(secondDns);
 	}
 	
 	public void stopProcess(final String proc) {
