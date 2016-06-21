@@ -72,6 +72,8 @@ public class RouteSettingsActivity extends PreferenceActivity implements
 		if (openNat.isChecked()) {
 			if (natInterface.getText().trim().isEmpty() && natIp.getText().trim().isEmpty() && natSubnet.getText().trim().isEmpty()) {
 				Toast.makeText(RouteSettingsActivity.this, "至少填写一个NAT参数", Toast.LENGTH_SHORT).show();
+			}else {
+				super.onBackPressed();
 			}
 		} else {
 			super.onBackPressed();
