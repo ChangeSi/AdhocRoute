@@ -28,12 +28,13 @@
     <string name="adhoc_start_dialog_message">自组织网络正在启动中\u2026</string>
     <string name="toast_adhoc_start_succeed">自组织网络启动成功</string>
     <string name="toast_adhoc_start_failed">自组织网络启动异常，请重新启动</string>
-    <string name="setting_preference_format_error">格式不正确</string>
+    <string name="toast_setting_preference_format_error">格式不正确</string>
     <string name="toast_open_wifi_succeed">开启WIFI成功</string>
     <string name="toast_close_wifi_succeed">断开网络成功</string>
     <string name="toast_device_ip_not_set">设备IP未设置</string>
     <string name="toast_net_id">Adhoc网络创建成功，网络ID：</string>
-    <string name="adhoc_build_adhoc_failed">Adhoc网络创建失败</string>
+    <string name="toast_adhoc_build_adhoc_failed">Adhoc网络创建失败</string>
+    <string name="toast_nat_param_error">至少填写一个NAT参数</string>
     
 </resources>
 

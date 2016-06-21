@@ -19,7 +19,7 @@ import com.xd.adhocroute.route.RouteConfig;
 public class ConfigHelper {
 	public static final String TAG = "AdhocRoute -> NativeHelper";
 	public static File app_bin;
-	private static String OLSRD;
+	private static String olsrdFilePath;
 
 	/**
 	 * 配置运行时参数配置，将其写入文件
@@ -35,7 +35,7 @@ public class ConfigHelper {
 
 	public static void setup(Context context) {
 		app_bin = context.getDir("bin", Context.MODE_PRIVATE).getAbsoluteFile();
-		OLSRD = new File(app_bin, "olsrd").getAbsolutePath();
+		olsrdFilePath = new File(app_bin, "olsrd").getAbsolutePath();
 	}
 
 	public static boolean unzipAssets(Context context) {
@@ -45,9 +45,7 @@ public class ConfigHelper {
 			final String[] assetList = am.list("");
 
 			for (String asset : assetList) {
-				if (asset.equals("images") || asset.equals("sounds")
-						|| asset.equals("webkit") || asset.equals("databases")
-						|| asset.equals("kioskmode"))
+				if (asset.equals("images") || asset.equals("sounds") || asset.equals("webkit") || asset.equals("databases") || asset.equals("kioskmode"))
 					continue;
 				int BUFFER = 2048;
 				final File file = new File(ConfigHelper.app_bin, asset);
@@ -55,13 +53,10 @@ public class ConfigHelper {
 				if (file.exists()) {
 					file.delete();
 					// 没必要都删除了，只需要每次更新配置文件即可,后面修改
-					Log.i(AdhocRouteApp.TAG,
-							"NativeHelper.unzipDebiFiles() deleting "
-									+ file.getAbsolutePath());
+					Log.i(AdhocRouteApp.TAG, "NativeHelper.unzipDebiFiles() deleting " + file.getAbsolutePath());
 				}
 				FileOutputStream fos = new FileOutputStream(file);
-				BufferedOutputStream dest = new BufferedOutputStream(fos,
-						BUFFER);
+				BufferedOutputStream dest = new BufferedOutputStream(fos, BUFFER);
 				int count;
 				byte[] data = new byte[BUFFER];
 				while ((count = assetIS.read(data, 0, BUFFER)) != -1) {
@@ -75,19 +70,17 @@ public class ConfigHelper {
 			result = false;
 			Log.e(AdhocRouteApp.TAG, "Can't unzip", e);
 		}
-		chmod("0775", new File(OLSRD));
-
+		chmod("0775", new File(olsrdFilePath));
 		return result;
 	}
+	
 	public static void chmod(String modestr, File path) {
 		Log.i(TAG, "chmod " + modestr + " " + path.getAbsolutePath());
 		try {
 			Class<?> fileUtils = Class.forName("android.os.FileUtils");
-			Method setPermissions = fileUtils.getMethod("setPermissions",
-					String.class, int.class, int.class, int.class);
+			Method setPermissions = fileUtils.getMethod("setPermissions", String.class, int.class, int.class, int.class);
 			int mode = Integer.parseInt(modestr, 8);
-			int a = (Integer) setPermissions.invoke(null,
-					path.getAbsolutePath(), mode, -1, -1);
+			int a = (Integer) setPermissions.invoke(null, path.getAbsolutePath(), mode, -1, -1);
 			if (a != 0) {
 				Log.i(TAG,"ERROR: android.os.FileUtils.setPermissions() returned " + a + " for '" + path + "'");
 			}
@@ -114,8 +107,8 @@ public class ConfigHelper {
 		// 网关
 		boolean staticGatewayEnabled = app.preferenceUtils.getBoolean("is_static_gateway_enabled", false);
 		boolean dynamicCheckGateway = app.preferenceUtils.getBoolean("is_dyncheck_gateway_enabled", false);
-
-		String dynGatewayPath = ConfigHelper.app_bin.getAbsolutePath() + "/olsrd_dyn_gw_plain.so.0.4";
+		// 动态监测网关
+		String dynGatewayPath = ConfigHelper.app_bin.getAbsolutePath() + "/olsrd_dyn_gw_plain";
 
 		// 网卡信息
 		if (!app.coretask.networkInterfaceExists(inface)) {

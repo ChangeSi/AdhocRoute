@@ -6,7 +6,9 @@ import android.text.method.DigitsKeyListener;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
+
+import com.xd.adhocroute.AdhocRouteApp;
+import com.xd.adhocroute.R;
 /**
  * 支持判断是否是float类型
  * @author qhyuan1992
@@ -43,7 +45,7 @@ public class FloatEditPreference extends EditTextPreference {
 		if (positiveResult) {
 			String addr = getEditText().getText().toString();
 			if (!validate(addr)) {
-				Toast.makeText(getContext(), "格式不正确", Toast.LENGTH_LONG).show();
+				((AdhocRouteApp)getContext().getApplicationContext()).showToastMsg(R.string.toast_setting_preference_format_error);
 				positiveResult = false;
 			}
 		}

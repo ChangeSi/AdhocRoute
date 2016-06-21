@@ -1,11 +1,11 @@
 package com.xd.adhocroute.route;
 
 import java.lang.ref.WeakReference;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
+import android.content.Context;
 import android.os.Handler;
 
+import com.xd.adhocroute.AdhocRouteApp;
 import com.xd.adhocroute.data.OlsrDataDump;
 
 /**
@@ -14,10 +14,14 @@ import com.xd.adhocroute.data.OlsrDataDump;
  *
  */
 public class RouteRefresh {
-	protected static final int REFRESH_SUCCESS = 0X01;
-	public static final int REFRESH_UNSTARTED = 0x03;
+	protected static final int REFRESH_SUCCESS = 5;
+	public static final int REFRESH_UNSTARTED = 6;
+	private AdhocRouteApp application;
 	private Callback refreshListener;
-	private ExecutorService exec = Executors.newSingleThreadExecutor();
+	
+	public RouteRefresh(Context context) {
+		this.application = (AdhocRouteApp)context.getApplicationContext();
+	}
 	
 	private Handler handler = new MyHandler(this);
 	
@@ -45,7 +49,7 @@ public class RouteRefresh {
 	
 	public void refreshRoute(Callback refreshListener) {
 		this.refreshListener = refreshListener;
-		exec.execute(new RefreshRunnable());
+		application.executorService.execute(new RefreshRunnable());
 	}
 
 	private class RefreshRunnable implements Runnable {

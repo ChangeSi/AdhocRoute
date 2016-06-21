@@ -10,18 +10,17 @@ import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.PreferenceActivity;
 
-public class NetSettingsActivity extends PreferenceActivity implements
-		OnSharedPreferenceChangeListener {
+public class NetSettingsActivity extends PreferenceActivity implements OnSharedPreferenceChangeListener {
 
 	private ListPreference channel;
 	private String[] channelEntry;
-	private AdhocRouteApp app;
+	private AdhocRouteApp application;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		addPreferencesFromResource(R.xml.netpreferences);
-		app = (AdhocRouteApp)getApplication();
+		application = (AdhocRouteApp)getApplication();
 		init();
 	}
 
@@ -43,7 +42,7 @@ public class NetSettingsActivity extends PreferenceActivity implements
 	private void init() {
 		channel = (ListPreference) findPreference("lan_channel");
 		channel.setEntryValues(getAllChannels());
-		channel.setValue(app.preferenceUtils.getString("lan_channel", "2412"));
+		channel.setValue(application.preferenceUtils.getString("lan_channel", "2412"));
 		channel.setEntries(getAllChannelNames());
 	}
 

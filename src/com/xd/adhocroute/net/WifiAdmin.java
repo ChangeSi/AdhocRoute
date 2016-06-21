@@ -69,6 +69,14 @@ public class WifiAdmin {
     }
     
 
+    /**
+     * 创建/连接到某个网络并设置IP等信息
+     * @param ssid
+     * @param ipAddr
+     * @param mask
+     * @param frequency
+     * @return 返回值表示创建的网络的ID，-1表示网络创建失败
+     */
     public int connect(String ssid, String ipAddr, int mask, int frequency) {
     	WifiConfigurationNew wifiConfig = new WifiConfigurationNew();
 		try {

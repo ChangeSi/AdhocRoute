@@ -19,16 +19,17 @@ public class AdhocRouteApp extends Application {
 /*
 	// APP state
 	public final static int STATE_STOPPED = 0;
-//	public final static int STATE_NET_CONSTRUCTING= 1;
-//	public final static int STATE_NET_CONSTRUCT_FAILED = 2;
+	public final static int STATE_NET_CONSTRUCTING= 1;
+	public final static int STATE_NET_CONSTRUCT_FAILED = 2;
 	public final static int STATE_NET_CONSTRUCT_SUCCEED = 3;
-//	public final static int STATE_ROUTE_RUNNING = 4;
-//	public final static int STATE_ROUTE_RUN_FAILED = 5;
+	public final static int STATE_ROUTE_RUNNING = 4;
+	public final static int STATE_ROUTE_RUN_FAILED = 5;
 	public final static int STATE_ROUTE_RUN_SUCCEED = 6;
 	
 	public static int appState = STATE_STOPPED;
+*/
 	
-	*/
+	// 标识自组织网络启动成功与否
 	public static boolean appState = false;
 	
 	public RouteServices service = null;
@@ -37,7 +38,7 @@ public class AdhocRouteApp extends Application {
 	public RouteRefresh routeRefresh;
 	public PreferenceUtils preferenceUtils;
 	public AdhocHelper adhocHelper;
-	public Toast toast;
+	private Toast toast;
 	
 	public void showToastMsg(String msg) {
         if (null == msg || "".equals(msg)) {
@@ -62,24 +63,19 @@ public class AdhocRouteApp extends Application {
         toast.show();
     }
 	
-	public ExecutorService getGlobalThreadPool() {
-		return executorService;
-	}
-	
 	@Override
 	public void onCreate() {
 		super.onCreate();
 		// 为了将创建网络的代码和路由的代码解耦合，先暂时将其全部放在AdhocHelper里面
 		adhocHelper = new AdhocHelper(this);
 		coretask = new CoreTask();
-		routeRefresh = new RouteRefresh();
+		routeRefresh = new RouteRefresh(this);
 		preferenceUtils = new PreferenceUtils(this);
-		
-		executorService = Executors.newFixedThreadPool(2);
+		executorService = Executors.newFixedThreadPool(3);
 	}
 
 	public void startProcess(final String proc) {
-		getGlobalThreadPool().execute(new Runnable() {
+		executorService.execute(new Runnable() {
 			@Override
 			public void run() {
 				appState = true;
@@ -88,7 +84,7 @@ public class AdhocRouteApp extends Application {
 			}
 		});
 
-		getGlobalThreadPool().execute(new Runnable() {
+		executorService.execute(new Runnable() {
 			@Override
 			public void run() {
 				Intent intent = new Intent(MainActivity.ACTION_DIALOG_ROUTE_HIDE_BROADCASTRECEIVER);
@@ -97,7 +93,7 @@ public class AdhocRouteApp extends Application {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-				if (appState == true && coretask.isProcessRunning(RouteServices.CMD_OLSR)) {
+				if (appState == true && coretask.isProcessRunning(RouteServices.CMD_OLSR_CONTAIN)) {
 					setDNS();
 					setNAT();
 					intent.putExtra("isStarted", true);
@@ -150,7 +146,7 @@ public class AdhocRouteApp extends Application {
 	
 	public void stopProcess(final String proc) {
 		if (coretask.isProcessRunning(proc)) {
-			getGlobalThreadPool().execute(new Runnable() {
+			executorService.execute(new Runnable() {
 				@Override
 				public void run() {
 					if (coretask.killProcess(proc)) {

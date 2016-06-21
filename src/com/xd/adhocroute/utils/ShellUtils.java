@@ -66,7 +66,7 @@ public class ShellUtils {
 			BufferedReader br = new BufferedReader(new java.io.InputStreamReader(process.getInputStream()));
 			String line = br.readLine();;
 	        while(line != null){
-	            if (line.contains(RouteServices.CMD_OLSR)) {
+	            if (line.contains(RouteServices.CMD_OLSR_CONTAIN)) {
 					return true;
 				}
 	            line = br.readLine();
@@ -96,7 +96,7 @@ public class ShellUtils {
 	}
     
     // 判断是否root
-    private boolean isDeviceRoot() {
+    private static boolean isDeviceRoot() {
 		Process process;
 		try {
 			process = Runtime.getRuntime().exec(COMMAND_SU);
