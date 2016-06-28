@@ -44,7 +44,6 @@ public class MainActivity extends Activity implements OnClickListener {
 	private RouteAdapter adapter;
 	private ProgressDialog tipDialog;
 	
-	
 	private Handler handler = new UIHandler(this);
 	
 	private static class UIHandler extends Handler{
@@ -77,7 +76,7 @@ public class MainActivity extends Activity implements OnClickListener {
 		adapter = new RouteAdapter(routeTables, this);
 		lvRoute.setAdapter(adapter);
 		timer = new Timer();
-		timer.schedule(new RefreshTimeTask(), 0, 1000);
+		timer.schedule(new RefreshTimeTask(), 0, 1500);
 	}
 
 	private void initUI() {

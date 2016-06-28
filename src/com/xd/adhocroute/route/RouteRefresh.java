@@ -57,6 +57,7 @@ public class RouteRefresh {
 		public void run() {
 			JsonInfo jsonInfo = new JsonInfo();
 			OlsrDataDump olsrDataDump = jsonInfo.all();
+			System.out.println("----------------" + olsrDataDump);
 			if (olsrDataDump.getRaw().equals("")) {
 				// 路由未开启
 				handler.sendEmptyMessage(REFRESH_UNSTARTED);

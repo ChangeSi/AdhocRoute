@@ -15,6 +15,7 @@ import android.util.Log;
 
 import com.xd.adhocroute.AdhocRouteApp;
 import com.xd.adhocroute.route.RouteConfig;
+import com.xd.adhocroute.route.RouteConfig.SimpleInfo;
 
 public class ConfigHelper {
 	public static final String TAG = "AdhocRoute -> NativeHelper";
@@ -100,6 +101,11 @@ public class ConfigHelper {
 		AdhocRouteApp app = (AdhocRouteApp) context.getApplicationContext();
 		// 网卡
 		String inface = app.preferenceUtils.getString("interface", "wlan0");
+		// 链路质量开启
+		boolean isLinkQualityEnabled = app.preferenceUtils.getBoolean("is_linkquality_enabled", true);
+		// 链路质量算法
+		String linkQualityAlgorithm = app.preferenceUtils.getString("linkqualityalgorithm", "etx_fpm");
+		
 		// 外网
 		boolean isWanEnabled = app.preferenceUtils.getBoolean("is_wan_enabled", false);
 		String wanSubnet = app.preferenceUtils.getString("wan_subnet", "");
@@ -132,6 +138,12 @@ public class ConfigHelper {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+//		SimpleInfo simpleInfo = new SimpleInfo();
+//		simpleInfo.setLinkQualityLevel(isLinkQualityEnabled ? 2 : 0);
+//		if (isLinkQualityEnabled) {
+//			simpleInfo.setLinkQualityAlgorithm(linkQualityAlgorithm);
+//		}
 		
 		// Hna消息(外网和静态网关均在这里设置)
 		if (isWanEnabled || staticGatewayEnabled) {

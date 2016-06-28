@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">AdhocRoute</string>
+    <string name="app_name">WIFI自组网</string>
     <string name="hello_world">Hello world!</string>
     <string name="net_settings">网络设置</string>
     <string name="route_settings">路由设置</string>
@@ -9,7 +9,7 @@
     <string name="title">WIFI自组网演示</string>
     <string name="start_adhoc_tips">启动自组织网络</string>
     <string name="baseinfo_adhoc_unstarted">路由未开启</string>
-    <string name="empty_listview_tips">自组织网络正在初始化，正在发现周围的节点\u2026</string>
+    <string name="empty_listview_tips">自组织网络初始化中，正在发现周围的节点\u2026</string>
     <string name="tv_dest_tag">目的地址</string>
     <string name="tv_mask_tag">掩码</string>
     <string name="tv_dest_content">192.168.2.251</string>
@@ -36,36 +36,10 @@
     <string name="toast_adhoc_build_adhoc_failed">Adhoc网络创建失败</string>
     <string name="toast_nat_param_error">至少填写一个NAT参数</string>
     
+    <string-array name="lq_algorithm_names">
+        <item>etx_fpm</item>
+        <item>etx_ffeth</item>
+        <item>etx_float</item>
+    </string-array>
+    
 </resources>
-
-<!--     <string-array name="channel_values"> -->
-<!--         <item>1</item> -->
-<!--         <item>2</item> -->
-<!--         <item>3</item> -->
-<!--         <item>4</item> -->
-<!--         <item>5</item> -->
-<!--         <item>6</item> -->
-<!--         <item>7</item> -->
-<!--         <item>8</item> -->
-<!--         <item>9</item> -->
-<!--         <item>10</item> -->
-<!--         <item>11</item> -->
-<!--         <item>12</item> -->
-<!--         <item>13</item>haihaoba  -->
-        
-<!--     </string-array> -->
-<!--     <string-array name="channel_names"> -->
-<!--         <item>1 – 2412 MHz</item> -->
-<!--         <item>2 – 2417 MHz</item> -->
-<!--         <item>3 – 2422 MHz</item> -->
-<!--         <item>4 – 2427 MHz</item> -->
-<!--         <item>5 – 2432 MHz</item> -->
-<!--         <item>6 – 2437 MHz</item> -->
-<!--         <item>7 – 2442 MHz</item> -->
-<!--         <item>8 – 2447 MHz</item> -->
-<!--         <item>9 – 2452 MHz</item> -->
-<!--         <item>10 – 2457 MHz</item> -->
-<!--         <item>11 – 2462 MHz</item> -->
-<!--         <item>12 – 2467 MHz</item> -->
-<!--         <item>13 – 2472 MHz</item> -->
-<!--     </string-array> -->

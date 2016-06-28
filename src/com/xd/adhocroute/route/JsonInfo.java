@@ -137,16 +137,19 @@ public class JsonInfo {
 		
 		try {
 			String dump = command(cmd);
-			System.out.println("json ---- >" + dump);
+//			System.out.println("json ---- >" + dump);
 			if (! dump.contentEquals(""))
 				// 等于""说明请求数据失败了
 				ret = mapper.readValue(dump, OlsrDataDump.class);
 			ret.setRaw(dump);
 		} catch (JsonParseException e) {
+			System.out.println("==================");
 			e.printStackTrace();
 		} catch (JsonMappingException e) {
+			System.out.println("==================");
 			e.printStackTrace();
 		} catch (IOException e) {
+			System.out.println("==================");
 			e.printStackTrace();
 		}
 
@@ -170,6 +173,7 @@ public class JsonInfo {
 			ret.plugins = Collections.emptyList();
 		if (ret.routes == null)
 			ret.routes = Collections.emptyList();
+		System.out.println("json ---- >" + ret);
 		return ret;
 	}
 	public OlsrDataDump all() {

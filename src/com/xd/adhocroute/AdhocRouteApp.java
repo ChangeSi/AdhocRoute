@@ -16,7 +16,8 @@ import com.xd.adhocroute.utils.PreferenceUtils;
 
 public class AdhocRouteApp extends Application {
 	public static String TAG = "AdhocRoute -> AdhocRouteApp";
-/*
+
+	/*
 	// APP state
 	public final static int STATE_STOPPED = 0;
 	public final static int STATE_NET_CONSTRUCTING= 1;
