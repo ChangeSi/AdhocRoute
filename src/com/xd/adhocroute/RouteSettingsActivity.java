@@ -5,22 +5,20 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.PreferenceActivity;
-import android.widget.Toast;
 
 import com.xd.adhocroute.route.IPEditPreference;
 import com.xd.adhocroute.route.InterfaceEditPreference;
 import com.xd.adhocroute.route.NetIPEditPreference;
 
-public class RouteSettingsActivity extends PreferenceActivity implements
-		OnSharedPreferenceChangeListener {
+public class RouteSettingsActivity extends PreferenceActivity implements OnSharedPreferenceChangeListener {
 	
 	private CheckBoxPreference openDynCheckGateway;
 	private CheckBoxPreference openStaticGateway;
 	private CheckBoxPreference openNat;
 	
-	private NetIPEditPreference natSubnet;
-	private IPEditPreference natIp;
-	private InterfaceEditPreference natInterface;
+//	private NetIPEditPreference natSubnet;
+//	private IPEditPreference natIp;
+//	private InterfaceEditPreference natInterface;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -43,9 +41,9 @@ public class RouteSettingsActivity extends PreferenceActivity implements
 	}
 	
 	private void init() {
-		natSubnet = (NetIPEditPreference)findPreference("natsubnet");
-		natIp = (IPEditPreference)findPreference("natip");
-		natInterface = (InterfaceEditPreference)findPreference("natinterface");
+//		natSubnet = (NetIPEditPreference)findPreference("natsubnet");
+//		natIp = (IPEditPreference)findPreference("natip");
+//		natInterface = (InterfaceEditPreference)findPreference("natinterface");
 		
 		openNat = (CheckBoxPreference)findPreference("open_nat");
 		openDynCheckGateway = (CheckBoxPreference)findPreference("is_dyncheck_gateway_enabled");
@@ -66,17 +64,17 @@ public class RouteSettingsActivity extends PreferenceActivity implements
 			}
 		}
 	}
-	
-	@Override
-	public void onBackPressed() {
-		if (openNat.isChecked()) {
-			if (natInterface.getText().trim().isEmpty() && natIp.getText().trim().isEmpty() && natSubnet.getText().trim().isEmpty()) {
-				Toast.makeText(RouteSettingsActivity.this, "至少填写一个NAT参数", Toast.LENGTH_SHORT).show();
-			}else {
-				super.onBackPressed();
-			}
-		} else {
-			super.onBackPressed();
-		}
-	}
+
+//	@Override
+//	public void onBackPressed() {
+//		if (openNat.isChecked()) {
+//			if (natInterface.getText().trim().isEmpty() && natIp.getText().trim().isEmpty() && natSubnet.getText().trim().isEmpty()) {
+//				((AdhocRouteApp)getApplicationContext()).showToastMsg(R.string.toast_nat_param_error);
+//			} else {
+//				super.onBackPressed();
+//			}
+//		} else {
+//			super.onBackPressed();
+//		}
+//	}
 }

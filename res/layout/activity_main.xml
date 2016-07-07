@@ -34,6 +34,16 @@
             android:layout_marginTop="5dp"
             android:gravity="center_vertical"
             android:src="@drawable/power_off_icon" />
+        
+        <Button 
+            android:id="@+id/nat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:text="NAT"
+            android:textSize="16sp"
+            android:layout_alignParentRight = "true"
+            />
     </RelativeLayout>
 
     <View

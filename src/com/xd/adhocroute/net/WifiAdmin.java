@@ -4,6 +4,7 @@ import java.net.InetAddress;
 import java.util.List;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiConfiguration.KeyMgmt;
 import android.net.wifi.WifiInfo;
@@ -16,11 +17,17 @@ public class WifiAdmin {
 	private WifiManager wifiManager;
 	private WifiInfo wifiInfo;
 	private WifiLock wifiLock;
+	private ConnectivityManager connectivity;
+	
 
 	public WifiAdmin(Context context) {
 		wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+		connectivity = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 	}
-
+	
+	public boolean enableAdhocNat(boolean enable) {
+		return connectivity.enableOrDisableAdhocNat(enable);
+	}
     public WifiInfo getConnectionInfo() {
         wifiInfo = wifiManager.getConnectionInfo();
         return wifiInfo;
@@ -69,10 +76,19 @@ public class WifiAdmin {
     }
     
 
-    public int connect(String ssid, String ipAddr, int mask, int frequency) {
+    /**
+     * 创建/连接到某个网络并设置IP等信息
+     * @param ssid
+     * @param ipAddr
+     * @param mask
+     * @param frequency
+     * @return 返回值表示创建的网络的ID，-1表示网络创建失败
+     */
+    public int connect(String ssid, String ipAddr, String gateway, int mask, int frequency) {
     	WifiConfigurationNew wifiConfig = new WifiConfigurationNew();
 		try {
 		wifiConfig.SSID = "\"" + ssid + "\"";
+		wifiConfig.setGateway(InetAddress.getByName(gateway));
 		wifiConfig.allowedKeyManagement.set(KeyMgmt.NONE);
 		/* Use reflection to configure static IP addresses */
 		wifiConfig.setIpAssignment("STATIC");

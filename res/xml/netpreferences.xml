@@ -17,6 +17,15 @@
             android:dialogTitle="Adhoc节点IP" 
 			android:dialogMessage="设置Adhoc节点IP："
              />
+         <com.xd.adhocroute.route.IPEditPreference
+            android:title="GateWay"
+            android:key="gateway"
+            android:singleLine="true"
+            android:defaultValue="192.168.2.33"
+            android:summary="网络的网关"
+            android:dialogTitle="网络的网关" 
+			android:dialogMessage="设置Adhoc网络的网关："
+             />
         <com.xd.adhocroute.route.MaskEditPreference
             android:title="MASK"
             android:key="adhoc_mask"

@@ -4,9 +4,15 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.wifi.WifiManager;
 import android.os.Handler;
+
 import com.xd.adhocroute.AdhocRouteApp;
 import com.xd.adhocroute.R;
 
+/**
+ * 为了解耦合建网和路由的关系，同时需要在建网的时候获取建网成功与否的状态
+ * @author qhyuan1992
+ *
+ */
 public class AdhocHelper {
 	protected static final int WIFI_START_SUCCEED = 0;
 	protected static final int WIFI_CLOSE_SUCCEED = 1;
@@ -15,24 +21,24 @@ public class AdhocHelper {
 	private static final int ADHOC_NET_FAILED = 4;
 	private WifiAdmin wifiAdmin;
 	public Handler handler;
-	public AdhocRouteApp app;
+	public AdhocRouteApp application;
 
 	@SuppressLint("HandlerLeak")
 	public AdhocHelper(final Context context) {
 		wifiAdmin = new WifiAdmin(context);
-		this.app = (AdhocRouteApp) context.getApplicationContext();
+		this.application = (AdhocRouteApp) context.getApplicationContext();
 		handler = new Handler() {
 			public void handleMessage(android.os.Message msg) {
 				if (msg.what == WIFI_START_SUCCEED) {
-					app.showToastMsg(R.string.toast_open_wifi_succeed);
+					application.showToastMsg(R.string.toast_open_wifi_succeed);
 				} else if (msg.what == WIFI_CLOSE_SUCCEED) {
-					app.showToastMsg(R.string.toast_close_wifi_succeed);
+					//application.showToastMsg(R.string.toast_close_wifi_succeed);
 				} else if (msg.what == IP_NOT_SET) {
-					app.showToastMsg(R.string.toast_device_ip_not_set);
+					application.showToastMsg(R.string.toast_device_ip_not_set);
 				} else if (msg.what == ADHOC_NET_ID) {
-					app.showToastMsg(context.getString(R.string.toast_net_id) + (Integer) msg.obj);
+					application.showToastMsg(context.getString(R.string.toast_net_id) + (Integer) msg.obj);
 				} else if (msg.what == ADHOC_NET_FAILED) {
-					app.showToastMsg(R.string.adhoc_build_adhoc_failed);
+					application.showToastMsg(R.string.toast_adhoc_build_adhoc_failed);
 				}
 			};
 		};
@@ -50,7 +56,6 @@ public class AdhocHelper {
 			}
 			handler.sendEmptyMessage(WIFI_START_SUCCEED);
 			if (connectWithRightParams()) {
-				//
 				return true;
 			} else {
 				return false;
@@ -74,17 +79,17 @@ public class AdhocHelper {
 	}
 
 	private boolean connectWithRightParams() {
-		String ssid = app.preferenceUtils.getString("ssid", "AdhocRoute");
-		String ip = app.preferenceUtils.getString("adhoc_ip", "");
-		String mask = app.preferenceUtils.getString("adhoc_mask", "255.255.255.0");
-		String channel = app.preferenceUtils.getString("lan_channel", "2412");
+		String ssid = application.preferenceUtils.getString("ssid", "AdhocRoute");
+		String ip = application.preferenceUtils.getString("adhoc_ip", "");
+		String gateway = application.preferenceUtils.getString("gateway", "192.168.2.33");
+		String mask = application.preferenceUtils.getString("adhoc_mask", "255.255.255.0");
+		String channel = application.preferenceUtils.getString("lan_channel", "2412");
 		if (ip.isEmpty()) {
 			handler.sendEmptyMessage(IP_NOT_SET);
 			return false;
 		}
 		int netID = -1;
-		if ((netID = wifiAdmin.connect(ssid, ip, toNumMask(mask),
-				Integer.parseInt(channel))) != -1) {
+		if ((netID = wifiAdmin.connect(ssid, ip, gateway, toNumMask(mask), Integer.parseInt(channel))) != -1) {
 			handler.obtainMessage(ADHOC_NET_ID, netID).sendToTarget();
 			return true;
 		} else {

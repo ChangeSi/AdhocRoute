@@ -61,6 +61,7 @@
             android:summary="HNA消息的有效时间"
             android:dialogTitle="设置HNA消息的有效时间" 
 			android:dialogMessage="使用如下设置作为HNA消息的有效时间，请填写浮点型数据，单位为秒：" />
+         
     </PreferenceCategory>
     
     <PreferenceCategory android:title="外网设置" >
@@ -138,36 +139,54 @@
             android:summaryOn="开启NAT功能"
             android:summaryOff="关闭NAT功能"
              />
-        <com.xd.adhocroute.route.NetIPEditPreference
-            android:key="natsubnet"
-            android:singleLine="true"
-            android:defaultValue=""
-            android:dependency="open_nat"
-            android:title="子网IP"
-            android:summary="设置要NAT的子网IP"
-            android:dialogTitle="设置要NAT的子网IP" 
-			android:dialogMessage="使用如下如下形式：子网IP/网络号，如192.168.2.0/24："
-             />
-        <com.xd.adhocroute.route.IPEditPreference
-            android:key="natip"
-            android:singleLine="true"
-            android:title="映射ip"
-            android:dependency="open_nat"
-            android:defaultValue=""
-            android:summary="设置通过该IP的数据包进行NAT"
-            android:dialogTitle="设置通过该IP的数据包进行NAT" 
-			android:dialogMessage="设置通过如下设置的IP的数据包进行NAT："
-             />
-        <com.xd.adhocroute.route.InterfaceEditPreference
-            android:key="natinterface"
-            android:singleLine="true"
-            android:title="映射网卡"
-            android:defaultValue=""
-            android:dependency="open_nat"
-            android:summary="设置通过该网卡的数据包进行NAT"
-            android:dialogTitle="设置通过该网卡的数据包进行NAT" 
-			android:dialogMessage="设置通过如下设置的网卡的数据包进行NAT："
-             />
+<!--         <com.xd.adhocroute.route.NetIPEditPreference -->
+<!--             android:key="natsubnet" -->
+<!--             android:singleLine="true" -->
+<!--             android:defaultValue="" -->
+<!--             android:dependency="open_nat" -->
+<!--             android:title="子网IP" -->
+<!--             android:summary="设置要NAT的子网IP" -->
+<!--             android:dialogTitle="设置要NAT的子网IP"  -->
+<!-- 			android:dialogMessage="使用如下如下形式：子网IP/网络号，如192.168.2.0/24：" -->
+<!--              /> -->
+<!--         <com.xd.adhocroute.route.IPEditPreference -->
+<!--             android:key="natip" -->
+<!--             android:singleLine="true" -->
+<!--             android:title="映射ip" -->
+<!--             android:dependency="open_nat" -->
+<!--             android:defaultValue="" -->
+<!--             android:summary="设置通过该IP的数据包进行NAT" -->
+<!--             android:dialogTitle="设置通过该IP的数据包进行NAT"  -->
+<!-- 			android:dialogMessage="设置通过如下设置的IP的数据包进行NAT：" -->
+<!--              /> -->
+<!--         <com.xd.adhocroute.route.InterfaceEditPreference -->
+<!--             android:key="natinterface" -->
+<!--             android:singleLine="true" -->
+<!--             android:title="映射网卡" -->
+<!--             android:defaultValue="" -->
+<!--             android:dependency="open_nat" -->
+<!--             android:summary="设置通过该网卡的数据包进行NAT" -->
+<!--             android:dialogTitle="设置通过该网卡的数据包进行NAT"  -->
+<!-- 			android:dialogMessage="设置通过如下设置的网卡的数据包进行NAT：" -->
+<!--              /> -->
     </PreferenceCategory>
 
 </PreferenceScreen>
+
+<!-- <CheckBoxPreference -->
+<!--             android:key="is_linkquality_enabled" -->
+<!--             android:defaultValue="true" -->
+<!--             android:summaryOn="开启链路质量" -->
+<!--             android:summaryOff="关闭链路质量" -->
+<!--             android:title="开启链路质量" /> -->
+         
+<!--          <ListPreference -->
+<!--             android:dependency="is_linkquality_enabled" -->
+<!--             android:summary="链路质量算法" -->
+<!--             android:default="etx_fpm" -->
+<!--             android:dialogTitle="选择使用的链路质量算法"  -->
+<!--             android:key="linkqualityalgorithm" -->
+<!--             android:title="链路质量算法" -->
+<!--             android:entries="@array/lq_algorithm_names" -->
+<!-- 			android:entryValues="@array/lq_algorithm_names" -->
+<!--              /> -->

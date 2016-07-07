@@ -39,7 +39,7 @@ public class InterfaceEditPreference extends EditTextPreference {
 		if (positiveResult) {
 			String addr = getEditText().getText().toString();
 			if (!validate(addr)) {
-				Toast.makeText(getContext(), R.string.toast_interface_set_not_exist, Toast.LENGTH_SHORT).show();
+				((AdhocRouteApp)getContext().getApplicationContext()).showToastMsg(R.string.toast_interface_set_not_exist);
 				positiveResult = false;
 			}
 		}

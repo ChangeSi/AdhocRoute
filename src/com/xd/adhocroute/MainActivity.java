@@ -11,18 +11,22 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import com.xd.adhocroute.data.Interface;
 import com.xd.adhocroute.data.OlsrDataDump;
 import com.xd.adhocroute.data.Route;
+import com.xd.adhocroute.net.WifiAdmin;
 import com.xd.adhocroute.route.RouteAdapter;
 import com.xd.adhocroute.route.RouteRefresh;
 import com.xd.adhocroute.route.RouteRefresh.Callback;
@@ -36,14 +40,17 @@ public class MainActivity extends Activity implements OnClickListener {
 	public static final int INTERFACE_NOT_EXIST = 0x08;
 	private ImageButton olsrd_switch;
 	private List<Route> routeTables = new ArrayList<Route>();
-	private AdhocRouteApp app;
+	private AdhocRouteApp application;
 	private ListView lvRoute;
 	private View emptyListView;
 	private Timer timer;
 	private TextView tvinfo;
 	private RouteAdapter adapter;
 	private ProgressDialog tipDialog;
+	private Button natControl;
+	private boolean mAdhocNatEnabled = false;
 	
+	private WifiAdmin wifiAdmin;
 	
 	private Handler handler = new UIHandler(this);
 	
@@ -58,7 +65,7 @@ public class MainActivity extends Activity implements OnClickListener {
 			if (mainActivity == null) return;
 			switch (msg.what) {
 			case INTERFACE_NOT_EXIST:
-				mainActivity.app.showToastMsg(R.string.toast_interface_set_not_exist);
+				mainActivity.application.showToastMsg(R.string.toast_interface_set_not_exist);
 				break;
 			default:
 				break;
@@ -69,15 +76,16 @@ public class MainActivity extends Activity implements OnClickListener {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		app = (AdhocRouteApp) getApplication();
+		application = (AdhocRouteApp) getApplication();
 		setContentView(R.layout.activity_main);
+		wifiAdmin = new WifiAdmin(this);
 		registerDialogBroadcastReceiver();
 		initUI();
 		setSwitchState();
 		adapter = new RouteAdapter(routeTables, this);
 		lvRoute.setAdapter(adapter);
 		timer = new Timer();
-		timer.schedule(new RefreshTimeTask(), 0, 1000);
+		timer.schedule(new RefreshTimeTask(), 0, 1500);
 	}
 
 	private void initUI() {
@@ -86,13 +94,17 @@ public class MainActivity extends Activity implements OnClickListener {
 		olsrd_switch = (ImageButton) findViewById(R.id.ib_olsrd);
 		tvinfo = (TextView) findViewById(R.id.tv_info);
 		olsrd_switch.setOnClickListener(this);
+		natControl = (Button)findViewById(R.id.nat);
+		natControl.setOnClickListener(this);
 	}
 	
 	private void setSwitchState() {
-		if (app.service == null) {
+		natControl.setText(application.isNatEnabled ? "关闭NAT" : "开启NAT");
+		
+		if (application.service == null) {
 			// service为null说明首次启动手机
-			app.stopProcess(RouteServices.CMD_OLSR);
-			app.adhocHelper.exitNet();
+			application.stopProcess(RouteServices.CMD_OLSR_CONTAIN);
+			application.adhocHelper.exitNet();
 			AdhocRouteApp.appState = false;
 			olsrd_switch.setImageResource(R.drawable.power_off_icon);
 		} else {
@@ -104,7 +116,7 @@ public class MainActivity extends Activity implements OnClickListener {
 	private class RefreshTimeTask extends TimerTask {
 		@Override
 		public void run() {
-			app.routeRefresh.refreshRoute(new Callback() {
+			application.routeRefresh.refreshRoute(new Callback() {
 				@Override
 				public void onSuccess(OlsrDataDump olsrDataDump) {
 					List<Interface> interfaces = (List<Interface>)olsrDataDump.interfaces;
@@ -130,9 +142,9 @@ public class MainActivity extends Activity implements OnClickListener {
 				public void onException(int exception) {
 					if (exception == RouteRefresh.REFRESH_UNSTARTED) {
 						// 路由未开启
+						adapter.update(new ArrayList<Route>());
 						lvRoute.setVisibility(View.INVISIBLE);
 						emptyListView.setVisibility(View.INVISIBLE);
-						adapter.update(new ArrayList<Route>());
 						tvinfo.setText(R.string.adhoc_not_started);
 					}
 				}
@@ -166,32 +178,57 @@ public class MainActivity extends Activity implements OnClickListener {
 		if (v.getId() == R.id.ib_olsrd) {
 			if (!AdhocRouteApp.appState) { 
 				showDialog();
-				app.getGlobalThreadPool().execute(new Runnable() {
+				application.executorService.execute(new Runnable() {
 					@Override
 					public void run() {
 						// 建网
-						if (app.adhocHelper.openWifiAndConnect()) {
+						if (application.adhocHelper.openWifiAndConnect()) {
 							if (!ConfigHelper.configAPP(MainActivity.this)) {
 								handler.sendEmptyMessage(INTERFACE_NOT_EXIST);
 								// 关闭进度条
 								tipDialog.dismiss();
-								app.adhocHelper.exitNet();
+								application.adhocHelper.exitNet();
 							} else {
-								app.startService();
+								application.startService();
 							}
 						} else {
 							// 建网失败
 							tipDialog.dismiss();
-							app.adhocHelper.exitNet();
+							application.adhocHelper.exitNet();
 						}
 					}
 				});
  			} else{
 				// 关闭路由
-				app.stopService();
+				application.stopService();
 				AdhocRouteApp.appState = false;
 				olsrd_switch.setImageResource(R.drawable.power_off_icon);
 			}
+		} else if (v.getId() == R.id.nat) {
+			String result = "";
+			if (mAdhocNatEnabled == false) {
+				boolean success = wifiAdmin.enableAdhocNat(true);
+				if (success) {
+					result = "NAT开启成功";
+					mAdhocNatEnabled = true;
+					natControl.setText("关闭NAT");
+				} else {
+					result = "NAT开启失败";
+					mAdhocNatEnabled = false;
+				}
+			} else {
+				boolean success = wifiAdmin.enableAdhocNat(false);
+				if (success) {
+					result = "NAT关闭成功";
+					mAdhocNatEnabled = false;
+					natControl.setText("开启NAT");
+				} else {
+					result = "NAT关闭失败";
+					mAdhocNatEnabled = true;
+				}
+			}
+			application.isNatEnabled = mAdhocNatEnabled;
+			application.showToastMsg(result);
 		}
 	}
 	
@@ -203,6 +240,7 @@ public class MainActivity extends Activity implements OnClickListener {
 		tipDialog.setCancelable(false);
 		tipDialog.show();
 	}
+	
 
 	private void registerDialogBroadcastReceiver() {
 		IntentFilter filter = new IntentFilter();  
@@ -226,12 +264,12 @@ public class MainActivity extends Activity implements OnClickListener {
         			tipDialog.dismiss();
         		}
         		if (isStarted) {
-        			app.showToastMsg(R.string.toast_adhoc_start_succeed);
+        			application.showToastMsg(R.string.toast_adhoc_start_succeed);
         			olsrd_switch.setImageResource(R.drawable.power_on_icon);
         		} else {
-        			app.showToastMsg(R.string.toast_adhoc_start_failed);
+        			application.showToastMsg(R.string.toast_adhoc_start_failed);
         			olsrd_switch.setImageResource(R.drawable.power_off_icon);
-        			app.adhocHelper.exitNet();
+        			application.adhocHelper.exitNet();
         		}
         	}
         }

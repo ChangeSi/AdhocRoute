@@ -7,6 +7,8 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.xd.adhocroute.AdhocRouteApp;
 import com.xd.adhocroute.R;
 /**
  * 支持判断是否是合法的IP地址
@@ -48,7 +50,7 @@ public class IPEditPreference extends EditTextPreference {
 		if (positiveResult) {
 			String addr = getEditText().getText().toString();
 			if (!validate(addr)) {
-				Toast.makeText(getContext(), R.string.setting_preference_format_error, Toast.LENGTH_LONG).show();
+				((AdhocRouteApp)getContext().getApplicationContext()).showToastMsg(R.string.toast_setting_preference_format_error);
 				positiveResult = false;
 			}
 		}

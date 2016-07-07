@@ -1,5 +1,6 @@
 package com.xd.adhocroute.route;
 
+import com.xd.adhocroute.AdhocRouteApp;
 import com.xd.adhocroute.R;
 
 import android.content.Context;
@@ -49,7 +50,7 @@ public class NetIPEditPreference extends EditTextPreference {
 		if (positiveResult) {
 			String addr = getEditText().getText().toString();
 			if (!validate(addr)) {
-				Toast.makeText(getContext(), R.string.setting_preference_format_error, Toast.LENGTH_SHORT).show();
+				((AdhocRouteApp)getContext().getApplicationContext()).showToastMsg(R.string.toast_setting_preference_format_error);
 				positiveResult = false;
 			}
 		}
