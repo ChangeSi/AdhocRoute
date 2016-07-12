@@ -5,7 +5,6 @@ import java.util.concurrent.Executors;
 
 import android.app.Application;
 import android.content.Intent;
-import android.net.ConnectivityManager;
 import android.widget.Toast;
 
 import com.xd.adhocroute.nativehelper.CoreTask;
@@ -43,7 +42,6 @@ public class AdhocRouteApp extends Application {
 	public PreferenceUtils preferenceUtils;
 	public AdhocHelper adhocHelper;
 	private Toast toast;
-	private ConnectivityManager mConnectivity;
 	
 	public void showToastMsg(String msg) {
         if (null == msg || "".equals(msg)) {
